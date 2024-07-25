@@ -3,7 +3,7 @@
 // @description  Adds a button to download images from Reddit posts
 // @version      1.0
 // @author       Alexander Bays, 956MB
-// @namespace    https://github.com/956MB/reddit-image-downloader
+// @namespace    https://github.com/956MB/reddit-download-button
 // @match        https://*.reddit.com/*
 // @match        https://*.redd.it/*
 // @license      MIT
