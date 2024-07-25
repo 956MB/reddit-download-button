@@ -1,0 +1,30 @@
+{
+    "manifest_version": 3,
+    "name": "Reddit Download Button",
+    "version": "0.1.0",
+    "description": "Adds a button to download images from Reddit posts",
+    "permissions": [
+        "activeTab",
+        "downloads",
+        "notifications"
+    ],
+    "host_permissions": [
+        "https://*.reddit.com/*",
+        "https://*.redd.it/*"
+    ],
+    "content_scripts": [
+        {
+            "matches": ["https://*.reddit.com/*"],
+            "js": ["content.js"],
+            "run_at": "document_idle"
+        }
+    ],
+    "action": {
+        "default_icon": {
+            "16": "img/icon16.png",
+            "32": "img/icon32.png",
+            "48": "img/icon48.png",
+            "128": "img/icon128.png"
+        }
+    }
+}
