@@ -4,9 +4,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3  # Updated to v3
     - name: Create Release Folder
       run: mkdir -p releases
+    - name: Create Tag
+      id: create_tag
+      run: |
+        tag=$(date +'%Y.%m.%d_%H-%M-%S')
+        echo "::set-output name=tag_name::$tag"
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git tag $tag
+        git push origin $tag
     - name: Archive Release
       uses: thedoctor0/zip-release@0.7.5
       with:
@@ -14,7 +23,8 @@ jobs:
         filename: 'releases/release.zip'
         exclusions: '*.git* /*node_modules/* .editorconfig'
     - name: Upload Release
-      uses: ncipollo/release-action@v1.12.0
+      uses: ncipollo/release-action@v1
       with:
         artifacts: "releases/release.zip"
+        tag: ${{ steps.create_tag.outputs.tag_name }}
         token: ${{ secrets.GITHUB_TOKEN }}
