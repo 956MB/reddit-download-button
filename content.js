@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Reddit Image Downloader
+// @name         Reddit Image Download Button
 // @description  Adds a button to download images from Reddit posts
-// @version      1.0
-// @author       Alexander Bays, 956MB
+// @version      0.1.1
+// @author       Alexander Bays (956MB)
 // @namespace    https://github.com/956MB/reddit-download-button
 // @match        https://*.reddit.com/*
 // @match        https://*.redd.it/*
@@ -92,9 +92,12 @@
             const mediaContainer = post.querySelector('div[slot="post-media-container"]');
             if (!mediaContainer) return;
 
+            const embed = mediaContainer.querySelector("shreddit-embed");
+            if (embed) return;
+
             let count = 0, type = "Media";
             const gallery = mediaContainer.querySelector("gallery-carousel");
-            const video = mediaContainer.querySelector("shreddit-player");
+            const video = mediaContainer.querySelector("shreddit-player, shreddit-player-2");
             const src = video?.querySelector("source")?.src;
 
             if (gallery) {
@@ -150,7 +153,7 @@
         if (!mediaContainer) return alert("No media found in this post");
         const postTitle = getPostTitle(post);
         const gallery = mediaContainer.querySelector("gallery-carousel");
-        const video = mediaContainer.querySelector("shreddit-player");
+        const video = mediaContainer.querySelector("shreddit-player, shreddit-player-2");
         let urls = [], extension = ".png";
 
         if (gallery) {
@@ -178,46 +181,52 @@
     };
 
     const downloadQueue = async (urls, postTitle, extension) => {
-        const maxConcurrent = 3, delay = 100;
-        let active = 0, index = 0;
+        const batchSize = 10;
+        const baseDelay = 10000;
+        const randomDelay = 2000;
+        let downloadedCount = 0;
+        const totalImages = urls.length;
 
-        const downloadNext = async () => {
-            if (index >= urls.length) {
-                return;
-            }
-            if (active >= maxConcurrent) {
-                await new Promise(resolve => setTimeout(resolve, delay));
-                return downloadNext();
-            }
+        const downloadBatch = async (batch) => {
+            const promises = batch.map(async (url, index) => {
+                const filename = `${postTitle}_${downloadedCount + index + 1}${extension}`;
+                try {
+                    await downloadFile(url, filename);
+                    console.log(`Successfully downloaded: ${filename}`);
+                    return true;
+                } catch (error) {
+                    console.error(`Error downloading ${filename}: ${error}`);
+                    return false;
+                }
+            });
 
-            const url = urls[index];
-            const filename = `${postTitle}_${index + 1}${extension}`;
-            index++;
-            active++;
-
-            try {
-                await downloadFile(url, filename);
-            } catch (error) {
-                console.error(`Error downloading ${filename}: ${error}`);
-            } finally {
-                active--;
-                downloadNext();
-            }
+            const results = await Promise.all(promises);
+            downloadedCount += results.filter(Boolean).length;
+            if (urls.length > 1) { console.log(`Batch complete. Downloaded: ${downloadedCount}/${totalImages}`); }
         };
 
-        const promises = [];
-
-        for (let i = 0; i < maxConcurrent; i++) {
-            promises.push(downloadNext());
+        for (let i = 0; i < urls.length; i += batchSize) {
+            const batch = urls.slice(i, i + batchSize);
+            await downloadBatch(batch);
+            if (i + batchSize < urls.length) {
+                const delay = baseDelay + Math.random() * randomDelay;
+                console.log(`Waiting ${Math.floor(delay / 1000)} seconds before next batch...`);
+                await new Promise(resolve => setTimeout(resolve, delay));
+            }
         }
 
-        await Promise.all(promises);
+        if (urls.length > 1) { console.log(`All downloads complete. Total: ${totalImages}`); }
     };
 
     const downloadFile = (url, filename) => {
         return new Promise((resolve, reject) => {
-            fetch(url)
-                .then(response => response.blob())
+            fetch(url, { mode: 'cors' })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.blob();
+                })
                 .then(blob => {
                     const a = document.createElement('a');
                     a.href = URL.createObjectURL(blob);
@@ -226,7 +235,6 @@
                     a.click();
                     document.body.removeChild(a);
                     URL.revokeObjectURL(a.href);
-                    console.log(`Successfully downloaded: ${filename}`);
                     resolve();
                 })
                 .catch(error => {

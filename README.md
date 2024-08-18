@@ -5,7 +5,7 @@
 The browser extension that I've always wanted for Reddit... a download button for grabbing all the images within a post. It's exactly what a data hoarder needs! *Does not require Reddit login.*
 
 >[!NOTE]
-> Currently the extension doesn't work on videos due to some `m3u8` shenanagins I couldn't get to work. Please feel free to help with an [issue](https://github.com/956MB/reddit-download-button/issues) or [pull request](https://github.com/956MB/reddit-download-button/pulls).
+> Currently the extension doesn't work on videos due to some `m3u8` shenanigins I couldn't get to work. Please feel free to help with an [issue](https://github.com/956MB/reddit-download-button/issues) or [pull request](https://github.com/956MB/reddit-download-button/pulls).
 
 ## Features
 
@@ -39,7 +39,7 @@ The browser extension that I've always wanted for Reddit... a download button fo
 
 ## Installation
 
-_Not added to the Chrome Web store or Firefox Add-ons yet, but may be in the future._
+*Not added to the Chrome Web store or Firefox Add-ons yet, but may be in the future.*
 
 ##### Browser Extension (manual):
 
@@ -55,6 +55,18 @@ _Not added to the Chrome Web store or Firefox Add-ons yet, but may be in the fut
 2. Click on this link to open the script in Tampermonkey: [Reddit Download Button Script](https://greasyfork.org/en/scripts/501718-reddit-image-downloader)
 3. Click on the "Install" or "Update" button
 4. The script should now be active on Reddit
+
+## Changelog
+
+### [0.1.1] - 2024-08-18
+
+#### Fixed
+
+- Fixed posts containing video player or embedded video links incorrectly being given a download button.
+- Also fixed GIF posts not being detected as a single image and download not working.
+- Resolved issue where only 10 images could be downloaded from posts containing more than 10 images. Implemented batch processing with a short delay between batches to comply with Reddit's rate limiting while allowing download of all images in a post.
+
+For a full list of changes and past versions, please see the [CHANGELOG.md](CHANGELOG.md) file.
 
 ## License
 
