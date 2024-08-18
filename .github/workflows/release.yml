@@ -1,5 +1,11 @@
 name: Create and Upload Release
-on: [push]
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+
 jobs:
   build:
     runs-on: ubuntu-latest
