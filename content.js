@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Reddit Image Download Button
 // @description  Adds a button to download images from Reddit posts
-// @version      0.1.1
+// @version      1.1
 // @author       Alexander Bays (956MB)
 // @namespace    https://github.com/956MB/reddit-download-button
 // @match        https://*.reddit.com/*
