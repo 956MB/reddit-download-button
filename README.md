@@ -66,7 +66,7 @@ The browser extension that I've always wanted for Reddit... a download button fo
 - Also fixed GIF posts not being detected as a single image and download not working.
 - Resolved issue where only 10 images could be downloaded from posts containing more than 10 images. Implemented batch processing with a short delay between batches to comply with Reddit's rate limiting while allowing download of all images in a post.
 
-For a full list of changes and past versions, please see the [CHANGELOG.md](CHANGELOG.md) file.
+For a full list of changes and past versions, please see the [CHANGELOG.md](CHANGELOG.md) file
 
 ## License
 
