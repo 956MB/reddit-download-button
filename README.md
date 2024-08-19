@@ -58,7 +58,7 @@ The browser extension that I've always wanted for Reddit... a download button fo
 
 ## Changelog
 
-### [0.1.1] - 2024-08-18
+### [1.1] - 2024-08-18
 
 #### Fixed
 
