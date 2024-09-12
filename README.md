@@ -1,11 +1,14 @@
+<div align="center">
+
 # Reddit Download Button
 
-![Reddit Image and Video Downloader](./img/screenshot.png)
+[![Greasy Fork Version](https://img.shields.io/greasyfork/v/501718?style=for-the-badge&logo=tampermonkey&logoColor=white&labelColor=4c4c4c&color=D93A00&borderRadius=8)](https://greasyfork.org/en/scripts/501718-reddit-image-downloader) [![Greasy Fork Total](https://img.shields.io/greasyfork/dt/501718?style=for-the-badge&logo=docusign&logoColor=white&label=installs&labelColor=4c4c4c&color=D93A00&borderRadius=8)](https://greasyfork.org/en/scripts/501718-reddit-image-downloader) [![Greasy Fork Daily](https://img.shields.io/greasyfork/dd/501718?style=for-the-badge&logo=addthis&logoColor=white&label=daily&labelColor=4c4c4c&color=D93A00&borderRadius=8)](https://greasyfork.org/en/scripts/501718-reddit-image-downloader) [![MIT License](https://img.shields.io/badge/License-MIT-D93A00.svg?style=for-the-badge&borderRadius=8)](https://opensource.org/licenses/MIT)
 
 The browser extension that I've always wanted for Reddit... a download button for grabbing all the images within a post. It's exactly what a data hoarder needs! *Does not require Reddit login.*
 
->[!NOTE]
-> Currently the extension doesn't work on videos due to some `m3u8` shenanigins I couldn't get to work. Please feel free to help with an [issue](https://github.com/956MB/reddit-download-button/issues) or [pull request](https://github.com/956MB/reddit-download-button/pulls).
+![Reddit Image and Video Downloader](./img/screenshot.png)
+
+</div>
 
 ## Features
 
@@ -14,10 +17,10 @@ The browser extension that I've always wanted for Reddit... a download button fo
 - Works on both the Reddit feed and individual post pages
 - Detects the highest resolution version of images for download
 
-## Supported Browsers:
+>[!WARNING]
+> Currently the extension doesn't work on videos due to some `m3u8` shenanigins I couldn't get to work. Please feel free to help with an [issue](https://github.com/956MB/reddit-download-button/issues) or [pull request](https://github.com/956MB/reddit-download-button/pulls).
 
->[!NOTE]
-> The extension is primarily designed for Chromium-based browsers. Functionality in other browsers outside of these may be limited or require additional configuration.
+## Supported Browsers:
 
 ##### *Chromium-based*
 
@@ -79,3 +82,5 @@ For a full list of changes and past versions, please see the [CHANGELOG.md](CHAN
 ## License
 
 [MIT LICENSE](./LICENSE)
+
+
