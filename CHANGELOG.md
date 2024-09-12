@@ -2,6 +2,12 @@
 
 All notable changes to the Reddit Image Downloader extension will be documented in this file.
 
+## 1.2 - 2024-09-10
+
+### Added
+
+- Added support for downloading single images from within the Reddit gallery carousel ("lightbox", when you click on a image and the gallery expands to fill the page).
+
 ## [1.1] - 2024-08-18
 
 ### Fixed

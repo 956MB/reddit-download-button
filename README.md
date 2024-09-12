@@ -10,7 +10,7 @@ The browser extension that I've always wanted for Reddit... a download button fo
 ## Features
 
 - Adds a download button next to the share button on Reddit posts
-- Supports downloading single images, image galleries, and GIFs
+- Supports downloading single images, entire image galleries, and GIFs
 - Works on both the Reddit feed and individual post pages
 - Detects the highest resolution version of images for download
 
@@ -56,17 +56,25 @@ The browser extension that I've always wanted for Reddit... a download button fo
 3. Click on the "Install" or "Update" button
 4. The script should now be active on Reddit
 
+## TODO
+
+- [ ] Figure out downloading m3u8 videos
+- [ ] ZIP download option for multiple images
+- [ ] Add UI for extension settings
+
 ## Changelog
 
-### [1.1] - 2024-08-18
+#### 1.2 - 2024-09-10
 
-#### Fixed
+##### Added
 
-- Fixed posts containing video player or embedded video links incorrectly being given a download button.
-- Also fixed GIF posts not being detected as a single image and download not working.
-- Resolved issue where only 10 images could be downloaded from posts containing more than 10 images. Implemented batch processing with a short delay between batches to comply with Reddit's rate limiting while allowing download of all images in a post.
+- Added support for downloading single images from within the Reddit gallery carousel ("lightbox", when you click on a image and the gallery expands to fill the page).
 
-For a full list of changes and past versions, please see the [CHANGELOG.md](CHANGELOG.md) file
+[1.1](./CHANGELOG.md#11---2024-08-18) - 2024-08-18
+
+[1.0](./CHANGELOG.md#10---2024-07-25) - 2024-07-25
+
+For a full list of changes and past versions, please see the [CHANGELOG.md](CHANGELOG.md)
 
 ## License
 

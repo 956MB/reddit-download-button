@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Reddit Image Download Button
 // @description  Adds a button to download images from Reddit posts
-// @version      1.1
+// @version      1.2
 // @author       Alexander Bays (956MB)
 // @namespace    https://github.com/956MB/reddit-download-button
 // @match        https://*.reddit.com/*
@@ -12,9 +12,9 @@
 (function () {
     "use strict";
 
-    const createButton = (postId, count, type) => {
+    const createPostDownloadButton = (postId, count, type) => {
         const btn = document.createElement("button");
-        btn.className = "reddit-image-downloader-button button border-md flex flex-row justify-center items-center mr-sm h-xl font-semibold relative text-12 button-secondary inline-flex items-center px-sm hover:text-secondary hover:bg-secondary-background-hover hover:border-secondary-background-hover";
+        btn.className = "reddit-image-downloader-button-post button border-md flex flex-row justify-center items-center h-xl font-semibold relative text-12 button-secondary inline-flex items-center px-sm hover:text-secondary hover:bg-secondary-background-hover hover:border-secondary-background-hover";
         btn.setAttribute("rpl", "");
         btn.setAttribute("data-post-click-location", "download-button");
         btn.setAttribute("data-post-id", postId);
@@ -22,13 +22,12 @@
         btn.setAttribute("type", "button");
 
         const text = `Download ${type}${count > 1 ? `s (${count})` : ""}`;
-        const imageIcon = `<svg rpl="" aria-hidden="true" class="icon-download" fill="currentColor" height="20" width="20" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-            <path d="M30 2.497h-28c-1.099 0-2 0.901-2 2v23.006c0 1.099 0.9 2 2 2h28c1.099 0 2-0.901 2-2v-23.006c0-1.099-0.901-2-2-2zM30 27.503l-28-0v-5.892l8.027-7.779 8.275 8.265c0.341 0.414 0.948 0.361 1.379 0.035l3.652-3.306 6.587 6.762c0.025 0.025 0.053 0.044 0.080 0.065v1.85zM30 22.806l-5.876-6.013c-0.357-0.352-0.915-0.387-1.311-0.086l-3.768 3.282-8.28-8.19c-0.177-0.214-0.432-0.344-0.709-0.363-0.275-0.010-0.547 0.080-0.749 0.27l-7.309 7.112v-14.322h28v18.309zM23 12.504c1.102 0 1.995-0.894 1.995-1.995s-0.892-1.995-1.995-1.995-1.995 0.894-1.995 1.995c0 1.101 0.892 1.995 1.995 1.995z"></path>
-        </svg>`;
-
         btn.innerHTML = `
             <span class="flex items-center">
-                <span class="flex text-16 mr-[var(--rem6)]">${imageIcon}</span>
+                <span class="flex text-16 mr-[var(--rem6)]">
+                    <svg rpl="" aria-hidden="true" class="icon-download" fill="currentColor" height="20" width="20" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M30 2.497h-28c-1.099 0-2 0.901-2 2v23.006c0 1.099 0.9 2 2 2h28c1.099 0 2-0.901 2-2v-23.006c0-1.099-0.901-2-2-2zM30 27.503l-28-0v-5.892l8.027-7.779 8.275 8.265c0.341 0.414 0.948 0.361 1.379 0.035l3.652-3.306 6.587 6.762c0.025 0.025 0.053 0.044 0.080 0.065v1.85zM30 22.806l-5.876-6.013c-0.357-0.352-0.915-0.387-1.311-0.086l-3.768 3.282-8.28-8.19c-0.177-0.214-0.432-0.344-0.709-0.363-0.275-0.010-0.547 0.080-0.749 0.27l-7.309 7.112v-14.322h28v18.309zM23 12.504c1.102 0 1.995-0.894 1.995-1.995s-0.892-1.995-1.995-1.995-1.995 0.894-1.995 1.995c0 1.101 0.892 1.995 1.995 1.995z"></path>
+                    </svg>
+                </span>
                 <span>${text}</span>
             </span>
             <faceplate-screen-reader-content>${text}</faceplate-screen-reader-content>
@@ -37,10 +36,91 @@
         btn.addEventListener("click", (e) => {
             e.preventDefault();
             e.stopPropagation();
-            downloadMedia(postId);
+            downloadMedia(postId, false);
         });
 
         return btn;
+    };
+
+    const createLightboxDownloadButton = (postId) => {
+        const btn = document.createElement("button");
+        btn.className = "reddit-image-downloader-button-lightbox absolute top-sm left-sm duration-300 opacity-100 button-large px-[var(--rem14)] button-media items-center justify-center button inline-flex";
+        btn.setAttribute("rpl", "");
+        btn.setAttribute("aria-label", "Download image");
+        btn.setAttribute("data-testid", "download-button");
+        btn.setAttribute("data-post-id", postId);
+
+        btn.innerHTML = `
+            <span class="flex items-center justify-center">
+                <span class="flex items-center gap-xs">
+                    <svg rpl="" fill="currentColor" stroke="currentColor" stroke-width="1" height="26" width="22" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4.97 11.03a.75.75 0 111.06-1.06L11 14.94V2.75a.75.75 0 011.5 0v12.19l4.97-4.97a.75.75 0 111.06 1.06l-6.25 6.25a.75.75 0 01-1.06 0l-6.25-6.25zm-.22 9.47a.75.75 0 000 1.5h14.5a.75.75 0 000-1.5H4.75z"/>
+                    </svg>
+                </span>
+            </span>
+        `;
+
+        btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            downloadMedia(postId, true);
+        });
+
+        return btn;
+    };
+
+    const addPostButtons = () => {
+        document.querySelectorAll("shreddit-post").forEach((post) => {
+            const postId = post.id, shadowRoot = post.shadowRoot;
+            if (!shadowRoot) return;
+            const targetDiv = shadowRoot.querySelector("div.flex.flex-row.items-center.flex-nowrap.overflow-hidden.justify-start");
+            if (!targetDiv || targetDiv.querySelector(".reddit-image-downloader-button-post")) return;
+            const mediaContainer = post.querySelector('div[slot="post-media-container"]');
+            if (!mediaContainer) return;
+
+            const embed = mediaContainer.querySelector("shreddit-embed");
+            if (embed) return;
+
+            let count = 1, type = "Image";
+            const gallery = mediaContainer.querySelector("gallery-carousel");
+            const video = mediaContainer.querySelector("shreddit-player, shreddit-player-2");
+            const src = video?.querySelector("source")?.src;
+
+            if (gallery) {
+                count = mediaContainer.querySelectorAll("gallery-carousel ul li").length;
+            }
+            if (video && ((src?.includes("mp4") && !src?.includes("gif")) || src?.includes("m3u8"))) return;
+            if (count === 0) return;
+
+            const shareBtn = targetDiv.querySelector('slot[name="share-button"]');
+            const downloadAllBtn = createPostDownloadButton(postId, count, type);
+
+            if (shareBtn) {
+                shareBtn.insertAdjacentElement("afterend", downloadAllBtn);
+            } else {
+                const awardBtn = targetDiv.querySelector("award-button");
+
+                if (awardBtn && awardBtn.nextElementSibling?.nextElementSibling) {
+                    awardBtn.nextElementSibling.nextElementSibling.insertAdjacentElement("afterend", downloadAllBtn);
+                }
+            }
+        });
+    };
+
+    const addLightboxButton = () => {
+        const lightbox = document.getElementById("shreddit-media-lightbox");
+        if (!lightbox || lightbox.querySelector(".reddit-image-downloader-button-lightbox")) return;
+        const closeButton = lightbox.querySelector('button[aria-label="Close lightbox"]');
+        if (!closeButton) return;
+        const postId = lightbox.querySelector("gallery-carousel")?.getAttribute("post-id");
+        if (!postId) return;
+
+        const downloadButton = createLightboxDownloadButton(postId);
+        closeButton.parentNode.insertBefore(downloadButton, closeButton);
+    };
+
+    const addButtons = () => {
+        addPostButtons();
+        addLightboxButton();
     };
 
     const getPostTitle = (post) => {
@@ -83,50 +163,6 @@
         }
     };
 
-    const addButtons = () => {
-        document.querySelectorAll("shreddit-post").forEach((post) => {
-            const postId = post.id, shadowRoot = post.shadowRoot;
-            if (!shadowRoot) return;
-            const targetDiv = shadowRoot.querySelector("div.flex.flex-row.items-center.flex-nowrap.overflow-hidden.justify-start");
-            if (!targetDiv || targetDiv.querySelector(".reddit-image-downloader-button")) return;
-            const mediaContainer = post.querySelector('div[slot="post-media-container"]');
-            if (!mediaContainer) return;
-
-            const embed = mediaContainer.querySelector("shreddit-embed");
-            if (embed) return;
-
-            let count = 0, type = "Media";
-            const gallery = mediaContainer.querySelector("gallery-carousel");
-            const video = mediaContainer.querySelector("shreddit-player, shreddit-player-2");
-            const src = video?.querySelector("source")?.src;
-
-            if (gallery) {
-                count = mediaContainer.querySelectorAll("gallery-carousel ul li").length;
-                type = "Image";
-            } else if (mediaContainer.querySelector("shreddit-aspect-ratio")) {
-                count = 1;
-                type = "Image";
-
-            }
-
-            if (video && ((src?.includes("mp4") && !src?.includes("gif")) || src?.includes("m3u8"))) return;
-            if (count === 0) return;
-
-            const shareBtn = targetDiv.querySelector('slot[name="share-button"]');
-            const btn = createButton(postId, count, type);
-
-            if (shareBtn) {
-                shareBtn.insertAdjacentElement("afterend", btn);
-            } else {
-                const awardBtn = targetDiv.querySelector("award-button");
-
-                if (awardBtn && awardBtn.nextElementSibling?.nextElementSibling) {
-                    awardBtn.nextElementSibling.nextElementSibling.insertAdjacentElement("afterend", btn);
-                }
-            }
-        });
-    };
-
     const loadAllImages = async (gallery) => {
         const images = gallery.querySelectorAll("li img.media-lightbox-img");
 
@@ -146,23 +182,39 @@
         }
     };
 
-    const downloadMedia = async (postId) => {
+    const downloadMedia = async (postId, isLightbox) => {
         const post = document.getElementById(postId);
         if (!post) return alert("Error: Could not find post content");
         const mediaContainer = post.querySelector('div[slot="post-media-container"]');
         if (!mediaContainer) return alert("No media found in this post");
-        const postTitle = getPostTitle(post);
-        const gallery = mediaContainer.querySelector("gallery-carousel");
+        let gallery = mediaContainer.querySelector("gallery-carousel");
         const video = mediaContainer.querySelector("shreddit-player, shreddit-player-2");
-        let urls = [], extension = ".png";
+        let urls = [], indexes = [], extension = ".png";
+
+        if (isLightbox) {
+            const lightbox = document.getElementById("shreddit-media-lightbox");
+            gallery = lightbox.querySelector("gallery-carousel");
+        }
 
         if (gallery) {
             await loadAllImages(gallery);
-            urls = Array.from(gallery.querySelectorAll("li img.media-lightbox-img")).map(getHighestResUrl);
+            if (isLightbox) {
+                gallery.querySelectorAll("li").forEach((li, index) => {
+                    if (li.getAttribute('tabindex') === "0") {
+                        const img = li.querySelector("img.media-lightbox-img");
+                        if (img) {
+                            urls.push(getHighestResUrl(img));
+                            const slot = li.getAttribute("slot");
+                            const pageNumber = slot ? parseInt(slot.replace("page-", "")) : index + 1;
+                            indexes.push(pageNumber);
+                        }
+                    }
+                });
+            } else {
+                urls = Array.from(gallery.querySelectorAll("li img.media-lightbox-img")).map(getHighestResUrl);
+            }
         } else if (video) {
-            const srcUrl = video.getAttribute("src");
-            const source = video.querySelector("source");
-
+            const srcUrl = video.getAttribute("src"), source = video.querySelector("source");
             if (srcUrl.includes("gif")) {
                 urls = [source.src];
                 extension = '.mp4';
@@ -173,23 +225,23 @@
         }
 
         if (urls.length > 0) {
-            await downloadQueue(urls, postTitle, extension);
+            const postTitle = getPostTitle(post);
+            await downloadQueue(urls, indexes, postTitle, extension, isLightbox);
             sendNotification(urls.length);
         } else {
             alert("No media found to download");
         }
     };
 
-    const downloadQueue = async (urls, postTitle, extension) => {
-        const batchSize = 10;
-        const baseDelay = 10000;
-        const randomDelay = 2000;
+    const downloadQueue = async (urls, indexes, postTitle, extension, isLightbox) => {
+        const batchSize = 10, baseDelay = 10000, randomDelay = 2000, totalImages = urls.length;
         let downloadedCount = 0;
-        const totalImages = urls.length;
 
-        const downloadBatch = async (batch) => {
+        const downloadBatch = async (batch, batchIndexes) => {
             const promises = batch.map(async (url, index) => {
-                const filename = `${postTitle}_${downloadedCount + index + 1}${extension}`;
+                const filename = isLightbox && indexes.length > 0
+                    ? `${postTitle}_${batchIndexes[index]}${extension}`
+                    : `${postTitle}_${downloadedCount + index + 1}${extension}`;
                 try {
                     await downloadFile(url, filename);
                     console.log(`Successfully downloaded: ${filename}`);
@@ -206,8 +258,8 @@
         };
 
         for (let i = 0; i < urls.length; i += batchSize) {
-            const batch = urls.slice(i, i + batchSize);
-            await downloadBatch(batch);
+            const batch = urls.slice(i, i + batchSize), batchIndexes = indexes.slice(i, i + batchSize);
+            await downloadBatch(batch, batchIndexes);
             if (i + batchSize < urls.length) {
                 const delay = baseDelay + Math.random() * randomDelay;
                 console.log(`Waiting ${Math.floor(delay / 1000)} seconds before next batch...`);
