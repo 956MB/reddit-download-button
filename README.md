@@ -62,20 +62,19 @@ The browser extension that I've always wanted for Reddit... a download button fo
 ## TODO
 
 - [ ] Figure out downloading m3u8 videos
-- [ ] ZIP download option for multiple images
 - [ ] Add UI for extension settings
 
 ## Changelog
 
-#### 1.2 - 2024-09-10
+[1.3](./CHANGELOG.md#13---2024-09-27) - 2024-09-27
 
 ##### Added
 
-- Added support for downloading single images from within the Reddit gallery carousel ("lightbox", when you click on a image and the gallery expands to fill the page).
+- Added ZIP download button for downloading all images in a post in cleaner way
 
-[1.1](./CHANGELOG.md#11---2024-08-18) - 2024-08-18
+##### Changed
 
-[1.0](./CHANGELOG.md#10---2024-07-25) - 2024-07-25
+- Consolidated post, lightbox and zip create button functions into one. Reduced lines.
 
 For a full list of changes and past versions, please see the [CHANGELOG.md](CHANGELOG.md)
 
