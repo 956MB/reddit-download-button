@@ -67,15 +67,11 @@ The browser extension that I've always wanted for Reddit... a download button fo
 
 ## Changelog
 
-#### 1.2 - 2024-09-10
+[1.2.1](./CHANGELOG.md#121---2024-09-27) - 2024-09-27
 
-##### Added
+##### Fixed
 
-- Added support for downloading single images from within the Reddit gallery carousel ("lightbox", when you click on a image and the gallery expands to fill the page).
-
-[1.1](./CHANGELOG.md#11---2024-08-18) - 2024-08-18
-
-[1.0](./CHANGELOG.md#10---2024-07-25) - 2024-07-25
+- Fixed issue where single image downloads from inside gallery carousel would not work. Reddit seems to have remove the `tabindex` attribute from the li elements in the gallery carousel, which was used to identify the selected image. We now check if the li has style `visibility: visible` to get the correct indexed image.
 
 For a full list of changes and past versions, please see the [CHANGELOG.md](CHANGELOG.md)
 

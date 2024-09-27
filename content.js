@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Reddit Image Download Button
 // @description  Adds a button to download images from Reddit posts
-// @version      1.2
+// @version      1.2.1
 // @author       Alexander Bays (956MB)
 // @namespace    https://github.com/956MB/reddit-download-button
 // @match        https://*.reddit.com/*
@@ -200,7 +200,7 @@
             await loadAllImages(gallery);
             if (isLightbox) {
                 gallery.querySelectorAll("li").forEach((li, index) => {
-                    if (li.getAttribute('tabindex') === "0") {
+                    if (li.style.visibility === "visible" || li.getAttribute('tabindex') === "0") {
                         const img = li.querySelector("img.media-lightbox-img");
                         if (img) {
                             urls.push(getHighestResUrl(img));
