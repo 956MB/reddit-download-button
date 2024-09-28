@@ -4,7 +4,7 @@
 
 [![Greasy Fork Version](https://img.shields.io/greasyfork/v/501718?style=for-the-badge&logo=tampermonkey&logoColor=white&labelColor=4c4c4c&color=D93A00&borderRadius=8)](https://greasyfork.org/en/scripts/501718-reddit-image-downloader) [![Greasy Fork Total](https://img.shields.io/greasyfork/dt/501718?style=for-the-badge&logo=docusign&logoColor=white&label=installs&labelColor=4c4c4c&color=D93A00&borderRadius=8)](https://greasyfork.org/en/scripts/501718-reddit-image-downloader) [![Greasy Fork Daily](https://img.shields.io/greasyfork/dd/501718?style=for-the-badge&logo=addthis&logoColor=white&label=daily&labelColor=4c4c4c&color=D93A00&borderRadius=8)](https://greasyfork.org/en/scripts/501718-reddit-image-downloader) [![MIT License](https://img.shields.io/badge/License-MIT-D93A00.svg?style=for-the-badge&borderRadius=8)](https://opensource.org/licenses/MIT)
 
-The browser extension that I've always wanted for Reddit... a download button for grabbing all the images within a post. It's exactly what a data hoarder needs! *Does not require Reddit login.*
+The browser extension that I've always wanted for Reddit... download buttons for easily saving images within posts. It's exactly what a data hoarder needs! *Does not require Reddit login.*
 
 ![Reddit Image and Video Downloader](./img/screenshot.png)
 
@@ -12,7 +12,8 @@ The browser extension that I've always wanted for Reddit... a download button fo
 
 ## Features
 
-- Adds a download button next to the share button on Reddit posts
+- Adds buttons to Reddit posts and inside galleries for easy one-click downloads
+- Separate ZIP download button for downloading all images in a folder
 - Supports downloading single images, entire image galleries, and GIFs
 - Works on both the Reddit feed and individual post pages
 - Detects the highest resolution version of images for download
@@ -26,7 +27,7 @@ The browser extension that I've always wanted for Reddit... a download button fo
 
 | Browser | Last Tested Version (Chromium Engine) |
 |:--------|:--------------------------------------|
-| [Arc](https://arc.net/download) | 1.49.1 (126.0.6478.127) |
+| [Arc](https://arc.net/download) | 1.63.1 (129.0.6668.90) |
 | [Brave](https://brave.com/download/) | 1.67.123 (126.0.6478.126) |
 | [Chrome](https://www.google.com/chrome/browser-tools/) | 126.0.6478.127 (126.0.0.0) |
 | [Chromium](https://download-chromium.appspot.com/) | 128.0.6580.0 (128.0.0.0) |
@@ -62,19 +63,28 @@ The browser extension that I've always wanted for Reddit... a download button fo
 ## TODO
 
 - [ ] Figure out downloading m3u8 videos
+- [X] <s>ZIP download option for multiple images</s>
 - [ ] Add UI for extension settings
+- [ ] Include metadata in ZIP file for the downloaded images/post (title, author, comments, etc.)
+- [ ] Support downloading multiple inline images/videos from text posts
 
 ## Changelog
 
-[1.3](./CHANGELOG.md#13---2024-09-27) - 2024-09-27
+[1.3](./CHANGELOG.md#13---2024-09-28) - 2024-09-28
 
 ##### Added
 
-- Added ZIP download button for downloading all images in a post in cleaner way
+- Added ZIP download button for downloading all images in a post in cleaner way. (Unsure if this should be a separate button, default behaviour of the post download button, or if UI should be added to pick either option.)
+- Added lightbox download button to single image carousel. The 'zoomed' image looks the same as a gallery-carousel for multiple images, but it's slightly different, so the download button wasn't being added the same as lightbox. This button functions the same as the 'Download Image' button below posts for single images.
 
 ##### Changed
 
 - Consolidated post, lightbox and zip create button functions into one. Reduced lines.
+- Removed the `sendNotification` function. The downloads should be noticable enough.
+
+##### Fixed
+
+- GIF posts were sometimes not recognized as single images and download button would not be created. Download button now uses text `Download GIF` for GIF posts.
 
 For a full list of changes and past versions, please see the [CHANGELOG.md](CHANGELOG.md)
 

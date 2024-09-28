@@ -2,16 +2,18 @@
 
 All notable changes to the Reddit Image Downloader extension will be documented in this file.
 
-## 1.3 - 2024-09-27
+## 1.3 - 2024-09-28
 
 ##### Added
 
-- Added ZIP download button for downloading all images in a post in cleaner way
+- Added ZIP download button for downloading all images in a post in cleaner way. (Unsure if this should be a separate button, default behaviour of the post download button, or if UI should be added to pick either option.)
+- Added lightbox download button to single image carousel. The 'zoomed' image looks the same as a gallery-carousel for multiple images, but it's slightly different, so the download button wasn't being added the same as lightbox. This button functions the same as the 'Download Image' button below posts for single images.
 
 ##### Changed
 
 - Consolidated post, lightbox and zip create button functions into one. Reduced lines.
 - Removed the `sendNotification` function. The downloads should be noticable enough.
+- Cleaned up filenames being used for individual images and Zip folder.
 
 ##### Fixed
 

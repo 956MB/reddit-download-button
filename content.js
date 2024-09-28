@@ -82,8 +82,11 @@
         document.querySelectorAll("shreddit-post").forEach((post) => {
             const postId = post.id, shadowRoot = post.shadowRoot;
             if (!shadowRoot) return;
+
             const targetDiv = shadowRoot.querySelector("div.flex.flex-row.items-center.flex-nowrap.overflow-hidden.justify-start");
-            if (!targetDiv || targetDiv.querySelector(".reddit-image-downloader-button-post")) return;
+            if (!targetDiv) return;
+            if (targetDiv.querySelector(".reddit-image-downloader-button-post")) return;
+
             const mediaContainer = post.querySelector('div[slot="post-media-container"]');
             if (!mediaContainer) return;
 
@@ -101,20 +104,22 @@
             }
             if ((video && ((src?.includes("mp4") && !isGif) || src?.includes("m3u8"))) || count === 0) return;
 
-            const buttons = [createDownloadButton(post.id, { count, type: isGif ? 'GIF' : 'Image' })];
+            const buttons = [createDownloadButton(postId, { count, type: isGif ? 'GIF' : 'Image' })];
             if (count >= 2) {
-                buttons.push(createDownloadButton(post.id, { isZip: true }));
+                buttons.push(createDownloadButton(postId, { isZip: true }));
             }
 
-            const insert = (targetElement) => { buttons.reverse().forEach(button => targetElement.insertAdjacentElement("afterend", button)) };
+            const insertAfter = (targetElement) => { buttons.reverse().forEach(button => targetElement.insertAdjacentElement("afterend", button)) };
             const shareBtn = targetDiv.querySelector('slot[name="share-button"]');
 
             if (shareBtn) {
-                insert(shareBtn);
+                insertAfter(shareBtn);
             } else {
                 const awardBtn = targetDiv.querySelector("award-button")?.nextElementSibling?.nextElementSibling;
                 if (awardBtn) {
-                    insert(awardBtn);
+                    insertAfter(awardBtn);
+                } else {
+                    return;
                 }
             }
         });
@@ -122,11 +127,18 @@
 
     const addLightboxButton = () => {
         const lightbox = document.getElementById("shreddit-media-lightbox");
-        if (!lightbox || lightbox.querySelector(".reddit-image-downloader-button-lightbox")) return;
+        if (!lightbox) return;
+        if (lightbox.querySelector(".reddit-image-downloader-button-lightbox")) return;
+
+        let postId = lightbox.querySelector("gallery-carousel")?.getAttribute("post-id");
+        if (!postId) {
+            const lightboxListener = document.querySelector("shreddit-media-lightbox-listener");
+            if (!lightboxListener) return;
+            postId = lightboxListener.getAttribute("post-id");
+            if (!postId) return;
+        }
         const closeButton = lightbox.querySelector('button[aria-label="Close lightbox"]');
         if (!closeButton) return;
-        const postId = lightbox.querySelector("gallery-carousel")?.getAttribute("post-id");
-        if (!postId) return;
 
         const lightboxButton = createDownloadButton(postId, { isLightbox: true });
         closeButton.parentNode.insertBefore(lightboxButton, closeButton);
@@ -186,9 +198,10 @@
         let gallery = mediaContainer.querySelector("gallery-carousel");
         const video = mediaContainer.querySelector("shreddit-player, shreddit-player-2");
         let urls = [], indexes = [], extension = ".png";
+        let lightbox = null;
 
         if (isLightbox) {
-            const lightbox = document.getElementById("shreddit-media-lightbox");
+            lightbox = document.getElementById("shreddit-media-lightbox");
             gallery = lightbox.querySelector("gallery-carousel");
         }
 
@@ -216,7 +229,12 @@
                 extension = '.mp4';
             }
         } else {
-            const singleImg = mediaContainer.querySelector("shreddit-aspect-ratio img.media-lightbox-img");
+            let singleImg = null;
+            if (isLightbox && lightbox) {
+                singleImg = lightbox.querySelector("img#post-image.media-lightbox-img");
+            } else {
+                singleImg = mediaContainer.querySelector("shreddit-aspect-ratio img.media-lightbox-img");
+            }
             if (singleImg) urls = [getHighestResUrl(singleImg)];
         }
 
@@ -229,7 +247,7 @@
     };
 
     const downloadQueue = async (urls, indexes, postTitle, extension, isLightbox, asZip = false) => {
-        const cleanTitle = postTitle.replace(/[^a-z0-9]/gi, "-").toLowerCase();
+        const cleanTitle = postTitle.replace(/[^a-z0-9]/gi, "-").replace(/-+/g, "-").replace(/^-+|-+$/g, "").toLowerCase();
         const batchSize = 10, baseDelay = 10000, randomDelay = 2000, totalImages = urls.length;
         let downloadedCount = 0;
 
@@ -279,16 +297,18 @@
             }
         }
 
+
         if (asZip && downloadedCount > 0) {
             console.log(`Generating zip file...`);
             const zipBlob = await zip.generateAsync({ type: "blob" });
-            const zipFilename = `${postTitle}.zip`;
+            const sanitizeName = postTitle.replace(/[<>:"/\\|?*\x00-\x1F]/g, '').replace(/^\.+/, '').replace(/\.+$/, '').replace(/\.+/g, '.').trim();
+            const zipFilename = `${sanitizeName}.zip`;
             await saveBlob(zipBlob, zipFilename);
             console.log(`Zip file downloaded: ${zipFilename}`);
         }
 
         if (!asZip && totalImages > 1) {
-            console.log(`All downloads complete. Total: ${totalImages}`);
+            console.log(`Download queue completed for "${postTitle}". Total files: ${downloadedCount}`);
         }
     };
 
@@ -303,9 +323,10 @@
     };
 
     const init = () => {
+        console.log(`Reddit Image Downloader v1.3 Init`);
+        console.log("- https://github.com/956MB/reddit-download-button");
         addButtons();
         new MutationObserver(() => addButtons()).observe(document.body, { childList: true, subtree: true });
-        console.log("Reddit Image Downloader loaded");
     };
 
     document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", init) : init();
