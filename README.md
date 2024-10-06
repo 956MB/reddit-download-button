@@ -72,7 +72,7 @@ The browser extension that I've always wanted for Reddit... download buttons for
 
 [1.3](./CHANGELOG.md#13---2024-09-28) - 2024-09-28
 
-##### Added
+##### Fixed
 
 - Added ZIP download button for downloading all images in a post in cleaner way. (Unsure if this should be a separate button, default behaviour of the post download button, or if UI should be added to pick either option.)
 - Added lightbox download button to single image carousel. The 'zoomed' image looks the same as a gallery-carousel for multiple images, but it's slightly different, so the download button wasn't being added the same as lightbox. This button functions the same as the 'Download Image' button below posts for single images.
