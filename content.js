@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Reddit Image Download Button
 // @description  Adds buttons to easily download images from Reddit
-// @version      1.3
+// @version      1.3.1
 // @author       Alexander Bays (956MB)
 // @namespace    https://github.com/956MB/reddit-download-button
 // @match        https://*.reddit.com/*
@@ -24,6 +24,12 @@
         const btn = document.createElement("button");
         let buttonContent;
 
+        const lightboxIcon = `<svg rpl="" fill="currentColor" stroke="currentColor" stroke-width="1" height="26" width="22" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4.97 11.03a.75.75 0 111.06-1.06L11 14.94V2.75a.75.75 0 011.5 0v12.19l4.97-4.97a.75.75 0 111.06 1.06l-6.25 6.25a.75.75 0 01-1.06 0l-6.25-6.25zm-.22 9.47a.75.75 0 000 1.5h14.5a.75.75 0 000-1.5H4.75z"/></svg>`;
+        const zipIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M17.005 2.73l-1.726-.999.996-1.731 1.725.999-.995 1.731zm-.87 1.669l-1.809-.678-.681 1.88 1.808.677.682-1.879zm-1.148 3.601h-1.987v2h1.987v-2zm-8.987-7.001l1.725-.999.996 1.731-1.726.999-.995-1.731zm2.547 5.28l1.808-.677-.681-1.88-1.809.677.682 1.88zm.466 3.721h1.987v-2h-1.987v2zm7.837 9l-1.852-7h-5.996l-1.852 7c-.786 3.156 1.602 5 4.85 5 3.252 0 5.635-1.848 4.85-5zm-7.848 1.125c0-2.627 5.992-2.688 5.992-.007 0 2.555-5.992 2.536-5.992.007z"/></svg>`;
+        const downloadIcon = `<svg rpl="" aria-hidden="true" class="icon-download" fill="currentColor" height="20" width="20" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M30 2.497h-28c-1.099 0-2 0.901-2 2v23.006c0 1.099 0.9 2 2 2h28c1.099 0 2-0.901 2-2v-23.006c0-1.099-0.901-2-2-2zM30 27.503l-28-0v-5.892l8.027-7.779 8.275 8.265c0.341 0.414 0.948 0.361 1.379 0.035l3.652-3.306 6.587 6.762c0.025 0.025 0.053 0.044 0.080 0.065v1.85zM30 22.806l-5.876-6.013c-0.357-0.352-0.915-0.387-1.311-0.086l-3.768 3.282-8.28-8.19c-0.177-0.214-0.432-0.344-0.709-0.363-0.275-0.010-0.547 0.080-0.749 0.27l-7.309 7.112v-14.322h28v18.309zM23 12.504c1.102 0 1.995-0.894 1.995-1.995s-0.892-1.995-1.995-1.995-1.995 0.894-1.995 1.995c0 1.101 0.892 1.995 1.995 1.995z"></path></svg>`;
+        const checkIcon = `<svg rpl="" aria-hidden="true" class="icon-check" fill="currentColor" height="20" width="20" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><polygon points="41.6,11.1 17,35.7 6.4,25.1 3.6,28 17,42.3 44.4,13.9"/></svg>`;
+
         if (isLightbox) {
             btn.className = "reddit-image-downloader-button-lightbox absolute top-sm left-sm duration-300 opacity-100 button-large px-[var(--rem14)] button-media items-center justify-center button inline-flex";
             btn.setAttribute("aria-label", "Download image");
@@ -42,16 +48,14 @@
             buttonContent = `
                 <span class="flex items-center justify-center">
                     <span class="flex items-center gap-xs">
-                        <svg rpl="" fill="currentColor" stroke="currentColor" stroke-width="1" height="26" width="22" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4.97 11.03a.75.75 0 111.06-1.06L11 14.94V2.75a.75.75 0 011.5 0v12.19l4.97-4.97a.75.75 0 111.06 1.06l-6.25 6.25a.75.75 0 01-1.06 0l-6.25-6.25zm-.22 9.47a.75.75 0 000 1.5h14.5a.75.75 0 000-1.5H4.75z"/></svg>
+                        ${lightboxIcon}
                     </span>
                 </span>
             `;
         } else if (isZip) {
             buttonContent = `
                 <span class="flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M17.005 2.73l-1.726-.999.996-1.731 1.725.999-.995 1.731zm-.87 1.669l-1.809-.678-.681 1.88 1.808.677.682-1.879zm-1.148 3.601h-1.987v2h1.987v-2zm-8.987-7.001l1.725-.999.996 1.731-1.726.999-.995-1.731zm2.547 5.28l1.808-.677-.681-1.88-1.809.677.682 1.88zm.466 3.721h1.987v-2h-1.987v2zm7.837 9l-1.852-7h-5.996l-1.852 7c-.786 3.156 1.602 5 4.85 5 3.252 0 5.635-1.848 4.85-5zm-7.848 1.125c0-2.627 5.992-2.688 5.992-.007 0 2.555-5.992 2.536-5.992.007z"/>
-                    </svg>
+                    ${zipIcon}
                 </span>
             `;
         } else {
@@ -59,7 +63,7 @@
             buttonContent = `
                 <span class="flex items-center">
                     <span class="flex text-16 mr-[var(--rem6)]">
-                        <svg rpl="" aria-hidden="true" class="icon-download" fill="currentColor" height="20" width="20" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><path d="M30 2.497h-28c-1.099 0-2 0.901-2 2v23.006c0 1.099 0.9 2 2 2h28c1.099 0 2-0.901 2-2v-23.006c0-1.099-0.901-2-2-2zM30 27.503l-28-0v-5.892l8.027-7.779 8.275 8.265c0.341 0.414 0.948 0.361 1.379 0.035l3.652-3.306 6.587 6.762c0.025 0.025 0.053 0.044 0.080 0.065v1.85zM30 22.806l-5.876-6.013c-0.357-0.352-0.915-0.387-1.311-0.086l-3.768 3.282-8.28-8.19c-0.177-0.214-0.432-0.344-0.709-0.363-0.275-0.010-0.547 0.080-0.749 0.27l-7.309 7.112v-14.322h28v18.309zM23 12.504c1.102 0 1.995-0.894 1.995-1.995s-0.892-1.995-1.995-1.995-1.995 0.894-1.995 1.995c0 1.101 0.892 1.995 1.995 1.995z"></path></svg>
+                        ${downloadIcon}
                     </span>
                     <span>${text}</span>
                 </span>
@@ -69,10 +73,43 @@
 
         btn.innerHTML = buttonContent;
 
-        btn.addEventListener("click", (e) => {
+        if (!isLightbox && !isZip) {
+            const originalText = `Download ${type}${count > 1 ? `s (${count})` : ""}`;
+
+            btn.updateText = (text, completed = false) => {
+                const textSpan = btn.querySelector('span > span:last-child');
+                const iconSpan = btn.querySelector('span > span:first-child');
+                const screenReaderContent = btn.querySelector('faceplate-screen-reader-content');
+
+                if (textSpan) textSpan.textContent = text;
+                if (screenReaderContent) screenReaderContent.textContent = text;
+                if (completed) {
+                    if (iconSpan) iconSpan.innerHTML = checkIcon;
+                    const downloadedText = count > 1 ? `Downloaded (${count})` : 'Downloaded';
+
+                    const showDownloadState = () => {
+                        textSpan.textContent = originalText;
+                        iconSpan.innerHTML = downloadIcon;
+                        screenReaderContent.textContent = originalText;
+                    };
+                    const showDownloadedState = () => {
+                        textSpan.textContent = downloadedText;
+                        iconSpan.innerHTML = checkIcon;
+                        screenReaderContent.textContent = downloadedText;
+                    };
+
+                    btn.addEventListener('mouseenter', showDownloadState);
+                    btn.addEventListener('mouseleave', showDownloadedState);
+                }
+            };
+        }
+
+        btn.addEventListener("click", async (e) => {
             e.preventDefault();
             e.stopPropagation();
-            downloadMedia(postId, isLightbox, isZip);
+            btn.disabled = true;
+            await downloadMedia(postId, isLightbox, isZip, btn);
+            btn.disabled = false;
         });
 
         return btn;
@@ -190,7 +227,7 @@
         }
     };
 
-    const downloadMedia = async (postId, isLightbox, asZip = false) => {
+    const downloadMedia = async (postId, isLightbox, asZip = false, btn = null) => {
         const post = document.getElementById(postId);
         if (!post) return alert("Error: Could not find post content");
         const mediaContainer = post.querySelector('div[slot="post-media-container"]');
@@ -240,13 +277,16 @@
 
         if (urls.length > 0) {
             const postTitle = getPostTitle(post);
-            await downloadQueue(urls, indexes, postTitle, extension, isLightbox, asZip);
+            await downloadQueue(urls, indexes, postTitle, extension, isLightbox, asZip, btn);
         } else {
             alert("No media found to download");
+            if (btn?.updateText) {
+                btn.updateText('Download failed');
+            }
         }
     };
 
-    const downloadQueue = async (urls, indexes, postTitle, extension, isLightbox, asZip = false) => {
+    const downloadQueue = async (urls, indexes, postTitle, extension, isLightbox, asZip = false, btn = null) => {
         const cleanTitle = postTitle.replace(/[^a-z0-9]/gi, "-").replace(/-+/g, "-").replace(/^-+|-+$/g, "").toLowerCase();
         const batchSize = 10, baseDelay = 10000, randomDelay = 2000, totalImages = urls.length;
         let downloadedCount = 0;
@@ -255,6 +295,14 @@
         if (asZip) {
             zip = new JSZip();
         }
+
+        const updateButtonStatus = () => {
+            if (btn?.updateText) {
+                if (totalImages > batchSize) {
+                    btn.updateText(`Downloading ${downloadedCount}/${totalImages}...`);
+                }
+            }
+        };
 
         const downloadBatch = async (batch, batchIndexes) => {
             const promises = batch.map(async (url, index) => {
@@ -282,6 +330,8 @@
 
             const results = await Promise.all(promises);
             downloadedCount += results.filter(Boolean).length;
+            updateButtonStatus();
+
             if (totalImages > 1) {
                 console.log(`Batch complete. Processed: ${downloadedCount}/${totalImages}`);
             }
@@ -300,11 +350,18 @@
 
         if (asZip && downloadedCount > 0) {
             console.log(`Generating zip file...`);
+
             const zipBlob = await zip.generateAsync({ type: "blob" });
             const sanitizeName = postTitle.replace(/[<>:"/\\|?*\x00-\x1F]/g, '').replace(/^\.+/, '').replace(/\.+$/, '').replace(/\.+/g, '.').trim();
             const zipFilename = `${sanitizeName}.zip`;
             await saveBlob(zipBlob, zipFilename);
+
             console.log(`Zip file downloaded: ${zipFilename}`);
+        }
+
+        if (btn?.updateText) {
+            const completionText = totalImages > 1 ? `Downloaded (${totalImages})` : 'Downloaded';
+            btn.updateText(completionText, true);
         }
 
         if (!asZip && totalImages > 1) {
@@ -323,7 +380,7 @@
     };
 
     const init = () => {
-        console.log(`Reddit Image Downloader v1.3 Init`);
+        console.log(`Reddit Image Downloader v1.3.1 Init`);
         console.log("- https://github.com/956MB/reddit-download-button");
         addButtons();
         new MutationObserver(() => addButtons()).observe(document.body, { childList: true, subtree: true });

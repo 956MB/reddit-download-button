@@ -2,6 +2,12 @@
 
 All notable changes to the Reddit Image Downloader extension will be documented in this file.
 
+## 1.3.1 - 2024-11-23
+
+##### Added
+
+- Added visual indication images have downloaded in post button. Button goes from image icon and "Download Images (9)", to a checkmark and "Downloaded". The button state goes back to original when hovered and can still be used again. Right now the post download states are not saved in LocalStorage.
+
 ## 1.3 - 2024-09-28
 
 ##### Added

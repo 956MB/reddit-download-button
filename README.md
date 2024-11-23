@@ -67,29 +67,23 @@ The browser extension that I've always wanted for Reddit... download buttons for
 - [ ] Add UI for extension settings
 - [ ] Include metadata in ZIP file for the downloaded images/post (title, author, comments, etc.)
 - [ ] Support downloading multiple inline images/videos from text posts
+- [ ] Add download buttons to single images in comment sections and ones opened in new tabs.
+
+## Known Issues
+
+- Sometimes the lightbox download button in the gallery doesn't download media when the post is not opened in it's own tab, giving the error `No media found to download`. 
 
 ## Changelog
 
-[1.3](./CHANGELOG.md#13---2024-09-28) - 2024-09-28
+[1.3.1](./CHANGELOG.md#131---2024-11-23) - 2024-11-23
 
-##### Fixed
+##### Added
 
-- Added ZIP download button for downloading all images in a post in cleaner way. (Unsure if this should be a separate button, default behaviour of the post download button, or if UI should be added to pick either option.)
-- Added lightbox download button to single image carousel. The 'zoomed' image looks the same as a gallery-carousel for multiple images, but it's slightly different, so the download button wasn't being added the same as lightbox. This button functions the same as the 'Download Image' button below posts for single images.
-
-##### Changed
-
-- Consolidated post, lightbox and zip create button functions into one. Reduced lines.
-- Removed the `sendNotification` function. The downloads should be noticable enough.
-
-##### Fixed
-
-- GIF posts were sometimes not recognized as single images and download button would not be created. Download button now uses text `Download GIF` for GIF posts.
+- Added visual indication images have downloaded in post button. Button goes from image icon and "Download Images (9)", to a checkmark and "Downloaded". The button state goes back to original when hovered and can still be used again. Right now the post download states are not saved in LocalStorage.
 
 For a full list of changes and past versions, please see the [CHANGELOG.md](CHANGELOG.md)
 
 ## License
 
 [MIT LICENSE](./LICENSE)
-
 
