@@ -1,6 +1,12 @@
 # Changelog
 
-All notable changes to the Reddit Image Downloader extension will be documented in this file.
+All notable changes to the `Reddit Download Buttons` extension will be documented in this file.
+
+## 1.3.2 - 2024-11-25
+
+##### Added
+
+- Added download button to the bottom bar of image preview screen. (Reached by clicking 'Open * in new tab' on an image post)
 
 ## 1.3.1 - 2024-11-23
 

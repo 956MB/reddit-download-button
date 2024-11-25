@@ -1,12 +1,14 @@
 <div align="center">
 
-# Reddit Download Button
+# Reddit Download Buttons
 
-[![Greasy Fork Version](https://img.shields.io/greasyfork/v/501718?style=for-the-badge&logo=tampermonkey&logoColor=white&labelColor=4c4c4c&color=D93A00&borderRadius=8)](https://greasyfork.org/en/scripts/501718-reddit-image-downloader) [![Greasy Fork Total](https://img.shields.io/greasyfork/dt/501718?style=for-the-badge&logo=docusign&logoColor=white&label=installs&labelColor=4c4c4c&color=D93A00&borderRadius=8)](https://greasyfork.org/en/scripts/501718-reddit-image-downloader) [![Greasy Fork Daily](https://img.shields.io/greasyfork/dd/501718?style=for-the-badge&logo=addthis&logoColor=white&label=daily&labelColor=4c4c4c&color=D93A00&borderRadius=8)](https://greasyfork.org/en/scripts/501718-reddit-image-downloader) [![MIT License](https://img.shields.io/badge/License-MIT-D93A00.svg?style=for-the-badge&borderRadius=8)](https://opensource.org/licenses/MIT)
+[![Greasy Fork Version](https://img.shields.io/greasyfork/v/501718?style=for-the-badge&logo=tampermonkey&logoColor=white&labelColor=4c4c4c&color=FF2700&borderRadius=8)](https://greasyfork.org/en/scripts/501718-reddit-image-downloader) [![Greasy Fork Total](https://img.shields.io/greasyfork/dt/501718?style=for-the-badge&logo=docusign&logoColor=white&label=installs&labelColor=4c4c4c&color=FF2700&borderRadius=8)](https://greasyfork.org/en/scripts/501718-reddit-image-downloader) [![Greasy Fork Daily](https://img.shields.io/greasyfork/dd/501718?style=for-the-badge&logo=addthis&logoColor=white&label=daily&labelColor=4c4c4c&color=FF2700&borderRadius=8)](https://greasyfork.org/en/scripts/501718-reddit-image-downloader) [![MIT License](https://img.shields.io/badge/License-MIT-FF2700.svg?style=for-the-badge&borderRadius=8)](https://opensource.org/licenses/MIT)
 
 The browser extension that I've always wanted for Reddit... download buttons for easily saving images within posts. It's exactly what a data hoarder needs! *Does not require Reddit login.*
 
-![Reddit Image and Video Downloader](./img/screenshot.png)
+![Reddit Download Buttons Post](./img/post.png)
+
+![Reddit Download Buttons Preview](./img/preview.png)
 
 </div>
 
@@ -19,7 +21,7 @@ The browser extension that I've always wanted for Reddit... download buttons for
 - Detects the highest resolution version of images for download
 
 >[!WARNING]
-> Currently the extension doesn't work on videos due to some `m3u8` shenanigins I couldn't get to work. Please feel free to help with an [issue](https://github.com/956MB/reddit-download-button/issues) or [pull request](https://github.com/956MB/reddit-download-button/pulls).
+> Currently the extension doesn't work on inline videos due to some `m3u8` thing I couldn't get to work. Please feel free to help with an [issue](https://github.com/956MB/reddit-download-button/issues) or [pull request](https://github.com/956MB/reddit-download-button/pulls).
 
 ## Supported Browsers:
 
@@ -27,7 +29,7 @@ The browser extension that I've always wanted for Reddit... download buttons for
 
 | Browser | Last Tested Version (Chromium Engine) |
 |:--------|:--------------------------------------|
-| [Arc](https://arc.net/download) | 1.63.1 (129.0.6668.90) |
+| [Arc](https://arc.net/download) | 1.70.0 (131.0.6778.86) |
 | [Brave](https://brave.com/download/) | 1.67.123 (126.0.6478.126) |
 | [Chrome](https://www.google.com/chrome/browser-tools/) | 126.0.6478.127 (126.0.0.0) |
 | [Chromium](https://download-chromium.appspot.com/) | 128.0.6580.0 (128.0.0.0) |
@@ -75,11 +77,11 @@ The browser extension that I've always wanted for Reddit... download buttons for
 
 ## Changelog
 
-[1.3.1](./CHANGELOG.md#131---2024-11-23) - 2024-11-23
+[1.3.2](./CHANGELOG.md#132---2024-11-25) - 2024-11-25
 
 ##### Added
 
-- Added visual indication images have downloaded in post button. Button goes from image icon and "Download Images (9)", to a checkmark and "Downloaded". The button state goes back to original when hovered and can still be used again. Right now the post download states are not saved in LocalStorage.
+- Added download button to the bottom bar of image preview screen. (Reached by clicking 'Open * in new tab' on an image post)
 
 For a full list of changes and past versions, please see the [CHANGELOG.md](CHANGELOG.md)
 
