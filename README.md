@@ -8,8 +8,6 @@ The browser extension that I've always wanted for Reddit... download buttons for
 
 ![Reddit Download Buttons Post](./img/post.png)
 
-![Reddit Download Buttons Preview](./img/preview.png)
-
 </div>
 
 ## Features
