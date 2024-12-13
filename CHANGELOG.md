@@ -2,6 +2,12 @@
 
 All notable changes to the `Reddit Download Buttons` extension will be documented in this file.
 
+## 1.3.3 - 2024-12-12
+
+##### Fixed
+
+- Fixed issue where single image downloads from inside gallery carousel would not work and user would get "Error: Could not find post content" or "No media found to download" alert. Caveat: Reddit seems to have a bug with the gallery carousel where it's keeping all the images as visible ("visibility: visible") when clicking forward/back. This is causing all images up to the index you've cliked to be downloaded.
+
 ## 1.3.2 - 2024-11-25
 
 ##### Added

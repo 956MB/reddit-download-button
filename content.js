@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Reddit Download Buttons
 // @description  Adds buttons to easily download images/videos from Reddit
-// @version      1.3.2
+// @version      1.3.3
 // @author       Alexander Bays (956MB)
 // @namespace    https://github.com/956MB/reddit-download-button
 // @match        https://*.reddit.com/*
@@ -43,7 +43,7 @@
             btn.setAttribute("style", "height: var(--size-button-sm-h); font: var(--font-button-sm)");
         }
 
-        btn.setAttribute("data-post-id", postId);
+        // btn.setAttribute("data-post-id", postId);
         btn.setAttribute("type", "button");
 
         if (isLightbox) {
@@ -171,18 +171,11 @@
         const lightbox = document.getElementById("shreddit-media-lightbox");
         if (!lightbox) return;
         if (lightbox.querySelector(".reddit-image-downloader-button-lightbox")) return;
-
-        let postId = lightbox.querySelector("gallery-carousel")?.getAttribute("post-id");
-        if (!postId) {
-            const lightboxListener = document.querySelector("shreddit-media-lightbox-listener");
-            if (!lightboxListener) return;
-            postId = lightboxListener.getAttribute("post-id");
-            if (!postId) return;
-        }
+  
         const closeButton = lightbox.querySelector('button[aria-label="Close lightbox"]');
         if (!closeButton) return;
 
-        const lightboxButton = createDownloadButton(postId, { isLightbox: true });
+        const lightboxButton = createDownloadButton(null, { isLightbox: true });
         closeButton.parentNode.insertBefore(lightboxButton, closeButton);
     };
 
@@ -213,8 +206,15 @@
         addPreviewButton();
     };
 
-    const getPostTitle = (post) => {
-        const title = post.querySelector('h1[id^="post-title-"]')?.textContent.trim() || post.getAttribute("post-title") || "Untitled";
+    const getPostTitle = (element) => {
+        if (element instanceof HTMLImageElement) {
+            const parts = element.alt.split(" - ");
+            return parts.length > 1 ? parts[1].trim() : parts[0].trim();
+        }
+        
+        const title = element.querySelector('h1[id^="post-title-"]')?.textContent.trim() || 
+                     element.getAttribute("post-title") || 
+                     "Untitled";
         return title;
     };
 
@@ -255,7 +255,10 @@
     };
 
     const downloadMedia = async (postId, isLightbox, asZip = false, btn = null) => {
-        if (postId.startsWith('/r/')) {
+        let post = null, mediaContainer = null, lightbox = null, gallery = null, video = null;
+        let urls = [], indexes = [], extension = ".png";
+
+        if (postId && postId.startsWith('/r/')) {
             const content = document.querySelector('faceplate-tracker zoomable-img img') || 
                             document.querySelector('faceplate-tracker zoomable-img video');
         
@@ -270,24 +273,29 @@
             }
         }
 
-        const post = document.getElementById(postId);
-        if (!post) return alert("Error: Could not find post content");
-        const mediaContainer = post.querySelector('div[slot="post-media-container"]');
-        if (!mediaContainer) return alert("No media found in this post");
-        let gallery = mediaContainer.querySelector("gallery-carousel");
-        const video = mediaContainer.querySelector("shreddit-player, shreddit-player-2");
-        let urls = [], indexes = [], extension = ".png";
-        let lightbox = null;
-
-        if (isLightbox) {
+        if (!isLightbox) {
+            post = document.getElementById(postId);
+            console.log("postId: ", postId);
+            if (!post) return alert("Error: Could not find post content");
+            mediaContainer = post.querySelector('div[slot="post-media-container"]');
+            if (!mediaContainer) return alert("No media found in this post");
+            gallery = mediaContainer.querySelector("gallery-carousel");
+            video = mediaContainer.querySelector("shreddit-player, shreddit-player-2");
+        } else {
             lightbox = document.getElementById("shreddit-media-lightbox");
             gallery = lightbox.querySelector("gallery-carousel");
+            if (gallery) {
+                postId = gallery.getAttribute("post-id");
+                post = document.getElementById(postId);
+            }
         }
 
         if (gallery) {
             await loadAllImages(gallery);
             if (isLightbox) {
                 gallery.querySelectorAll("li").forEach((li, index) => {
+                    // BUG: (with Reddit NOT code) For some reason the gallery-carousel on Reddit is keeping all the images as visible ("visibility: visible") when clicking forward/back. This is causing all images up to the index you've cliked to be downloaded.
+                    // Only other method I can see right now of knowing the index is the translate3d value of the gallery-carousel. It's going up/down based on the window width.
                     if (li.style.visibility === "visible" || li.getAttribute('tabindex') === "0") {
                         const img = li.querySelector("img.media-lightbox-img");
                         if (img) {
@@ -308,13 +316,16 @@
                 extension = '.mp4';
             }
         } else {
+            console.log("no gallery or video, SINGLE IMAGE");
             let singleImg = null;
             if (isLightbox && lightbox) {
-                singleImg = lightbox.querySelector("img#post-image.media-lightbox-img");
+                console.log("lightbox: ", lightbox);
+                singleImg = lightbox.querySelector("img.media-lightbox-img");
             } else {
                 singleImg = mediaContainer.querySelector("shreddit-aspect-ratio img.media-lightbox-img");
             }
             if (singleImg) urls = [getHighestResUrl(singleImg)];
+            post = singleImg;
         }
 
         if (urls.length > 0) {
@@ -422,7 +433,7 @@
     };
 
     const init = () => {
-        console.log(`Reddit Image Downloader v1.3.2 Init`);
+        console.log(`Reddit Image Downloader v1.3.3 Init`);
         console.log("- https://github.com/956MB/reddit-download-button");
         addButtons();
         new MutationObserver(() => addButtons()).observe(document.body, { childList: true, subtree: true });

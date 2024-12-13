@@ -75,15 +75,14 @@ The browser extension that I've always wanted for Reddit... download buttons for
 
 ## Changelog
 
-[1.3.2](./CHANGELOG.md#132---2024-11-25) - 2024-11-25
+[1.3.3](./CHANGELOG.md#133---2024-12-12) - 2024-12-12
 
-##### Added
+##### Fixed
 
-- Added download button to the bottom bar of image preview screen. (Reached by clicking 'Open * in new tab' on an image post)
+- Fixed issue where single image downloads from inside gallery carousel would not work and user would get "Error: Could not find post content" or "No media found to download" alert. Caveat: Reddit seems to have a bug with the gallery carousel where it's keeping all the images as visible ("visibility: visible") when clicking forward/back. This is causing all images up to the index you've cliked to be downloaded.
 
 For a full list of changes and past versions, please see the [CHANGELOG.md](CHANGELOG.md)
 
 ## License
 
 [MIT LICENSE](./LICENSE)
-
