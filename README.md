@@ -71,7 +71,8 @@ The browser extension that I've always wanted for Reddit... download buttons for
 
 ## Known Issues
 
-- Sometimes the lightbox download button in the gallery doesn't download media when the post is not opened in it's own tab, giving the error `No media found to download`. 
+- For some reason the gallery-carousel on Reddit is keeping all the images as visible ("visibility: visible") when clicking forward/back. This is causing all images up to the index you've clicked to be downloaded. Only other method I can see right now of knowing the index is the translate3d value of the gallery-carousel. It's going up/down based on the window width.
+- The preview download button doesn't work I believe because of the CORS policy.
 
 ## Changelog
 
