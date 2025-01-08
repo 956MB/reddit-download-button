@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Reddit Download Buttons
 // @description  Adds buttons to easily download images/videos from Reddit
-// @version      1.3.3
+// @version      1.3.4
 // @author       Alexander Bays (956MB)
 // @namespace    https://github.com/956MB/reddit-download-button
 // @match        https://*.reddit.com/*
@@ -125,9 +125,14 @@
             const postId = post.id, shadowRoot = post.shadowRoot;
             if (!shadowRoot) return;
 
-            const targetDiv = shadowRoot.querySelector("div.flex.flex-row.items-center.flex-nowrap.overflow-hidden.justify-start");
-            if (!targetDiv) return;
-            if (targetDiv.querySelector(".reddit-image-downloader-button-post")) return;
+            let postContainer = shadowRoot.querySelector("div.flex.flex-row.items-center.flex-nowrap.overflow-hidden.justify-start");
+            if (!postContainer) {
+                postContainer = shadowRoot.querySelector("div.shreddit-post-container");
+                if (!postContainer) return;
+                if (postContainer.querySelector(".reddit-image-downloader-button-post")) return;
+            } else {
+                if (postContainer.querySelector(".reddit-image-downloader-button-post")) return;
+            }
 
             const mediaContainer = post.querySelector('div[slot="post-media-container"]');
             if (!mediaContainer) return;
@@ -152,12 +157,12 @@
             }
 
             const insertAfter = (targetElement) => { buttons.reverse().forEach(button => targetElement.insertAdjacentElement("afterend", button)) };
-            const shareBtn = targetDiv.querySelector('slot[name="share-button"]');
+            const shareBtn = postContainer.querySelector('slot[name="share-button"]');
 
             if (shareBtn) {
                 insertAfter(shareBtn);
             } else {
-                const awardBtn = targetDiv.querySelector("award-button")?.nextElementSibling?.nextElementSibling;
+                const awardBtn = postContainer.querySelector("award-button")?.nextElementSibling?.nextElementSibling;
                 if (awardBtn) {
                     insertAfter(awardBtn);
                 } else {
@@ -171,7 +176,7 @@
         const lightbox = document.getElementById("shreddit-media-lightbox");
         if (!lightbox) return;
         if (lightbox.querySelector(".reddit-image-downloader-button-lightbox")) return;
-  
+
         const closeButton = lightbox.querySelector('button[aria-label="Close lightbox"]');
         if (!closeButton) return;
 
@@ -189,8 +194,8 @@
         if (!buttonContainer) return;
         if (buttonContainer.querySelector(".reddit-image-downloader-button-bottom-bar")) return;
 
-        const downloadButton = createDownloadButton(bottomBar.getAttribute("permalink"), { 
-            count: 1, 
+        const downloadButton = createDownloadButton(bottomBar.getAttribute("permalink"), {
+            count: 1,
             type: 'Image',
             isPreview: true
         });
@@ -211,10 +216,10 @@
             const parts = element.alt.split(" - ");
             return parts.length > 1 ? parts[1].trim() : parts[0].trim();
         }
-        
-        const title = element.querySelector('h1[id^="post-title-"]')?.textContent.trim() || 
-                     element.getAttribute("post-title") || 
-                     "Untitled";
+
+        const title = element.querySelector('h1[id^="post-title-"]')?.textContent.trim() ||
+            element.getAttribute("post-title") ||
+            "Untitled";
         return title;
     };
 
@@ -259,15 +264,15 @@
         let urls = [], indexes = [], extension = ".png";
 
         if (postId && postId.startsWith('/r/')) {
-            const content = document.querySelector('faceplate-tracker zoomable-img img') || 
-                            document.querySelector('faceplate-tracker zoomable-img video');
-        
+            const content = document.querySelector('faceplate-tracker zoomable-img img') ||
+                document.querySelector('faceplate-tracker zoomable-img video');
+
             if (content) {
                 const urls = [content.src];
                 const titleMatch = postId.match(/\/([^/]+)\/$/);
                 const postTitle = titleMatch ? titleMatch[1] : "untitled";
                 const extension = (content.tagName === 'VIDEO') ? '.mp4' : '.png';
-                
+
                 await downloadQueue(urls, [], postTitle, extension, false, false, btn);
                 return;
             }
@@ -433,7 +438,7 @@
     };
 
     const init = () => {
-        console.log(`Reddit Image Downloader v1.3.3 Init`);
+        console.log(`Reddit Image Downloader v1.3.4 Init`);
         console.log("- https://github.com/956MB/reddit-download-button");
         addButtons();
         new MutationObserver(() => addButtons()).observe(document.body, { childList: true, subtree: true });

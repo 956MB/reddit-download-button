@@ -2,6 +2,12 @@
 
 All notable changes to the `Reddit Download Buttons` extension will be documented in this file.
 
+## 1.3.4 - 2025-01-08
+
+##### Fixed
+
+- Fixed issue where the download button wasn't being added to the post container because the classes of the div were changed. We now look for `div.shreddit-post-container` to make sure we have a place to insert the button.
+
 ## 1.3.3 - 2024-12-12
 
 ##### Fixed
