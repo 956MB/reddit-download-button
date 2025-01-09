@@ -299,8 +299,6 @@
             await loadAllImages(gallery);
             if (isLightbox) {
                 gallery.querySelectorAll("li").forEach((li, index) => {
-                    // BUG: (with Reddit NOT code) For some reason the gallery-carousel on Reddit is keeping all the images as visible ("visibility: visible") when clicking forward/back. This is causing all images up to the index you've cliked to be downloaded.
-                    // Only other method I can see right now of knowing the index is the translate3d value of the gallery-carousel. It's going up/down based on the window width.
                     if (li.style.visibility === "visible" || li.getAttribute('tabindex') === "0") {
                         const img = li.querySelector("img.media-lightbox-img");
                         if (img) {

@@ -75,6 +75,7 @@ The browser extension that I've always wanted for Reddit... download buttons for
 > This seems to be fixed now (2025-01-08), I guess it was just a bug with Reddit itself? The button should now download individual images in the gallery carousel as intended.
 - ~~For some reason the gallery-carousel on Reddit is keeping all the images as visible ("visibility: visible") when clicking forward/back. This is causing all images up to the index you've clicked to be downloaded. Only other method I can see right now of knowing the index is the translate3d value of the gallery-carousel. It's going up/down based on the window width.~~
 - The preview download button doesn't work I believe because of the CORS policy.
+- ZIP file creation not working when run from Tampermonkey. [Issue #2](https://github.com/956MB/reddit-download-button/issues/2)
 
 ## Changelog
 
