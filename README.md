@@ -62,6 +62,7 @@ The browser extension that I've always wanted for Reddit... download buttons for
 
 ## TODO
 
+- [ ] Support 'Old' Reddit / Reddit Enhancement Suite
 - [ ] Figure out downloading m3u8 videos
 - [X] <s>ZIP download option for multiple images</s>
 - [ ] Add UI for extension settings
