@@ -224,7 +224,9 @@
     };
 
     const getHighestResUrl = (img) => {
-        const zoomable = img.closest(".media-lightbox-img").querySelector(".zoomable-img-wrapper img");
+        const mediaLightbox = img.closest(".media-lightbox-img");
+        const zoomable = mediaLightbox?.parentElement?.querySelector(".zoomable-img-wrapper img");
+        console.log("zoomable: ", zoomable);
         if (zoomable) return zoomable.src;
         const srcset = img.getAttribute("srcset");
 
@@ -234,9 +236,11 @@
                 return { url, width: parseInt(width) };
             }).sort((a, b) => b.width - a.width);
 
+            console.log("sources: ", sources);
             return sources[0].url;
         }
 
+        console.log("img.src: ", img.src);
         return img.src;
     };
 
@@ -366,18 +370,49 @@
                     ? `${cleanTitle}_${batchIndexes[index]}${extension}`
                     : `${cleanTitle}_${downloadedCount + index + 1}${extension}`;
                 try {
-                    const response = await fetch(url, { mode: 'cors' });
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    const blob = await response.blob();
-                    if (asZip) {
-                        zip.file(filename, blob);
+                    // Use GM_xmlhttpRequest for i.redd.it urls to bypass cors (works in Tampermonkey)
+                    if (url.includes('i.redd.it') && typeof GM_xmlhttpRequest !== 'undefined') {
+                        return new Promise((resolve) => {
+                            GM_xmlhttpRequest({
+                                method: 'GET',
+                                url: url,
+                                responseType: 'blob',
+                                onload: async function (response) {
+                                    try {
+                                        const blob = response.response;
+                                        if (asZip) {
+                                            zip.file(filename, blob);
+                                        } else {
+                                            await saveBlob(blob, filename);
+                                        }
+                                        console.log(`${asZip ? "Added to zip" : "Downloaded"}: ${filename}`);
+                                        resolve(true);
+                                    } catch (error) {
+                                        console.error(`Error processing ${filename}: ${error}`);
+                                        resolve(false);
+                                    }
+                                },
+                                onerror: function (error) {
+                                    console.error(`Error downloading ${filename}: ${error}`);
+                                    resolve(false);
+                                }
+                            });
+                        });
                     } else {
-                        await saveBlob(blob, filename);
+                        // Regular fetch for non-i.redd.it URLs
+                        const response = await fetch(url, { mode: 'cors' });
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        const blob = await response.blob();
+                        if (asZip) {
+                            zip.file(filename, blob);
+                        } else {
+                            await saveBlob(blob, filename);
+                        }
+                        console.log(`${asZip ? "Added to zip" : "Downloaded"}: ${filename}`);
+                        return true;
                     }
-                    console.log(`${asZip ? "Added to zip" : "Downloaded"}: ${filename}`);
-                    return true;
                 } catch (error) {
                     console.error(`Error processing ${filename}: ${error}`);
                     return false;
