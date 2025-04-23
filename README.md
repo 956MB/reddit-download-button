@@ -13,7 +13,6 @@ The browser extension that I've always wanted for Reddit... download buttons for
 ## Features
 
 - Adds buttons to Reddit posts and inside galleries for easy one-click downloads
-- Separate ZIP download button for downloading all images in a folder
 - Supports downloading single images, entire image galleries, and GIFs
 - Works on both the Reddit feed and individual post pages
 - Detects the highest resolution version of images for download
