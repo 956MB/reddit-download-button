@@ -2,6 +2,20 @@
 
 All notable changes to the `Reddit Download Buttons` extension will be documented in this file.
 
+## 1.3.5 - 2025-04-22
+
+##### Fixed
+
+- [#7](https://github.com/956MB/reddit-download-button/issues/7) Fixed images not being downloaded at highest resolution due to incorrectly identifying the zoomable element. Downloads overall seem to be faster now with these changes (fingers crossed).
+- Preview download button and others downloading from `i.redd.it` urls now uses `GM_xmlhttpRequest` (Tampermonkey only, unpacked extensions through chrome doesn't support or play nice with this) to bypass CORS.
+- [#6](https://github.com/956MB/reddit-download-button/issues/6) Fixed images not having their correct extension when multiple extensions are present in the post. Like a `.gif` and a `.png`, default `.png` would be used for both.
+- Not sure how or why, but maybe file previews in macOS are back to normal since we're downloading form the `i.redd.it` urls? Not even sure if this was script issue or a problem for other OS as well.
+
+##### Removed
+
+- Removed the installation instructions for manual "load unpacked" method. It doesn't play nice with the CORS policy of `i.redd.it` urls or the `GM_xmlhttpRequest` function used by tampermonkey. It's just not the best way to use it.
+- [#2](https://github.com/956MB/reddit-download-button/issues/2) Removed the ZIP download functionality because it's broken right now and I'm not sure how to fix it. Maybe will be added back if I add UI. Reduces tampermonkey script size by ~100kb, so that's a plus. Reference to #2.
+
 ## 1.3.4 - 2025-01-08
 
 ##### Fixed

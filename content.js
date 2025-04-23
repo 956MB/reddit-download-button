@@ -1,13 +1,13 @@
 // ==UserScript==
 // @name         Reddit Download Buttons
 // @description  Adds buttons to easily download images/videos from Reddit
-// @version      1.3.4
+// @version      1.3.5
 // @author       Alexander Bays (956MB)
 // @namespace    https://github.com/956MB/reddit-download-button
 // @match        https://*.reddit.com/*
 // @match        https://*.redd.it/*
 // @license      MIT
-// @require      https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js
+// @grant        GM_xmlhttpRequest
 // ==/UserScript==
 
 (function () {
@@ -222,27 +222,53 @@
                 const [url, width] = src.trim().split(" ");
                 return { url, width: parseInt(width) };
             }).sort((a, b) => b.width - a.width);
-            return sources[0].url;
+            
+            if (sources.length > 0) {
+                console.log("Using highest res from srcset:", sources[0].url);
+                return sources[0].url;
+            }
         }
-
+        
+        console.log("Falling back to original src:", img.src);
         return img.src;
     };
 
-    const loadAllImages = async (gallery) => {
-        const images = gallery.querySelectorAll("li img.media-lightbox-img");
-
-        for (let i = 0; i < images.length; i++) {
-            const img = images[i];
-            if (img.dataset.lazySrc) {
-                img.src = img.dataset.lazySrc;
-                img.srcset = img.dataset.lazySrcset;
-                await new Promise(resolve => {
-                    if (img.complete) {
-                        resolve();
-                    } else {
+    const loadAllImages = async (container) => {
+        if (container.tagName === 'gallery-carousel') {
+            const galleryImages = container.querySelectorAll("li img.media-lightbox-img");
+            
+            for (let i = 0; i < galleryImages.length; i++) {
+                const img = galleryImages[i];
+                if (img.dataset.lazySrc) {
+                    img.src = img.dataset.lazySrc;
+                    img.srcset = img.dataset.lazySrcset;
+                }
+                if (!img.complete) {
+                    await new Promise(resolve => {
                         img.onload = resolve;
+                        setTimeout(resolve, 3000);
+                    });
+                }
+            }
+        } 
+        else if (container instanceof HTMLImageElement) {
+            const img = container;
+            const mediaLightbox = img.closest(".media-lightbox-img");
+            
+            if (mediaLightbox) {
+                const zoomableWrapper = mediaLightbox.querySelector(".zoomable-img-wrapper");
+                
+                if (zoomableWrapper) {
+                    zoomableWrapper.classList.remove("hidden");
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    const zoomableImg = zoomableWrapper.querySelector("zoomable-img img");
+                    if (zoomableImg && !zoomableImg.complete) {
+                        await new Promise(resolve => {
+                            zoomableImg.onload = resolve;
+                            setTimeout(resolve, 3000);
+                        });
                     }
-                });
+                }
             }
         }
     };
@@ -327,7 +353,10 @@
             } else {
                 singleImg = mediaContainer.querySelector("shreddit-aspect-ratio img.media-lightbox-img");
             }
-            if (singleImg) urls = [getHighestResUrl(singleImg)];
+            if (singleImg) {
+                await loadAllImages(singleImg);
+                urls = [getHighestResUrl(singleImg)];
+            }
             post = singleImg;
         }
 
@@ -443,7 +472,7 @@
     };
 
     const init = () => {
-        console.log(`Reddit Image Downloader v1.3.4 Init`);
+        console.log(`Reddit Image Downloader v1.3.5 Init`);
         console.log("- https://github.com/956MB/reddit-download-button");
         addButtons();
         new MutationObserver(() => addButtons()).observe(document.body, { childList: true, subtree: true });

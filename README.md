@@ -45,14 +45,6 @@ The browser extension that I've always wanted for Reddit... download buttons for
 
 *Not added to the Chrome Web store or Firefox Add-ons yet, but may be in the future.*
 
-##### Browser Extension (manual):
-
-1. Clone this repository or download the [ZIP](https://github.com/956MB/reddit-download-button/releases) file and extract it
-2. Open your Chromium-based browser and navigate to the extensions page (e.g., `chrome://extensions`)
-3. Enable "Developer mode" in the top right corner
-4. Click "Load unpacked" and select the directory containing the extension files
-5. The extension should now be installed and active
-
 ##### Userscript (Greasyfork/Tampermonkey):
 
 1. Install [Tampermonkey](https://www.tampermonkey.net/) for your browser
@@ -63,27 +55,31 @@ The browser extension that I've always wanted for Reddit... download buttons for
 ## TODO
 
 - [ ] Figure out downloading m3u8 videos
-- [X] <s>ZIP download option for multiple images</s>
 - [ ] Add UI for extension settings
 - [ ] Include metadata in ZIP file for the downloaded images/post (title, author, comments, etc.)
 - [ ] Support downloading multiple inline images/videos from text posts
-- [ ] Add download buttons to single images in comment sections and ones opened in new tabs.
+- [ ] Add download buttons to single images in comment sections.
 
 ## Known Issues
 
 > [!NOTE]
-> This seems to be fixed now (2025-01-08), I guess it was just a bug with Reddit itself? The button should now download individual images in the gallery carousel as intended.
-- ~~For some reason the gallery-carousel on Reddit is keeping all the images as visible ("visibility: visible") when clicking forward/back. This is causing all images up to the index you've clicked to be downloaded. Only other method I can see right now of knowing the index is the translate3d value of the gallery-carousel. It's going up/down based on the window width.~~
-- The preview download button doesn't work I believe because of the CORS policy.
 - ZIP file creation not working when run from Tampermonkey. [Issue #2](https://github.com/956MB/reddit-download-button/issues/2)
 
 ## Changelog
 
-[1.3.4](./CHANGELOG.md#134---2025-01-08) - 2025-01-08
+[1.3.5](./CHANGELOG.md#135---2025-04-22) - 2025-04-22
 
 ##### Fixed
 
-- Fixed issue where the download button wasn't being added to the post container because the classes of the div were changed. We now look for `div.shreddit-post-container` to make sure we have a place to insert the button.
+- [#7](https://github.com/956MB/reddit-download-button/issues/7) Fixed images not being downloaded at highest resolution due to incorrectly identifying the zoomable element. Downloads overall seem to be faster now with these changes (fingers crossed).
+- Preview download button and others downloading from `i.redd.it` urls now uses `GM_xmlhttpRequest` (Tampermonkey only, unpacked extensions through chrome doesn't support or play nice with this) to bypass CORS.
+- [#6](https://github.com/956MB/reddit-download-button/issues/6) Fixed images not having their correct extension when multiple extensions are present in the post. Like a `.gif` and a `.png`, default `.png` would be used for both.
+- Not sure how or why, but maybe file previews in macOS are back to normal since we're downloading form the `i.redd.it` urls? Not even sure if this was script issue or a problem for other OS as well.
+
+##### Removed
+
+- Removed the installation instructions for manual "load unpacked" method. It doesn't play nice with the CORS policy of `i.redd.it` urls or the `GM_xmlhttpRequest` function used by tampermonkey. It's just not the best way to use it.
+- [#2](https://github.com/956MB/reddit-download-button/issues/2) Removed the ZIP download functionality because it's broken right now and I'm not sure how to fix it. Maybe will be added back if I add UI. Reduces tampermonkey script size by ~100kb, so that's a plus. Reference to #2.
 
 For a full list of changes and past versions, please see the [CHANGELOG.md](CHANGELOG.md)
 

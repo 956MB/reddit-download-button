@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Reddit Download Buttons",
-    "version": "1.3.4",
+    "version": "1.3.5",
     "description": "Adds buttons to easily download images/videos from Reddit",
     "permissions": [
         "activeTab",
@@ -18,7 +18,6 @@
                 "https://*.reddit.com/*"
             ],
             "js": [
-                "lib/jszip.min.js",
                 "content.js"
             ],
             "run_at": "document_idle"
