@@ -226,7 +226,6 @@
     const getHighestResUrl = (img) => {
         const mediaLightbox = img.closest(".media-lightbox-img");
         const zoomable = mediaLightbox?.parentElement?.querySelector(".zoomable-img-wrapper img");
-        console.log("zoomable: ", zoomable);
         if (zoomable) return zoomable.src;
         const srcset = img.getAttribute("srcset");
 
@@ -235,12 +234,9 @@
                 const [url, width] = src.trim().split(" ");
                 return { url, width: parseInt(width) };
             }).sort((a, b) => b.width - a.width);
-
-            console.log("sources: ", sources);
             return sources[0].url;
         }
 
-        console.log("img.src: ", img.src);
         return img.src;
     };
 
@@ -261,6 +257,18 @@
                 });
             }
         }
+    };
+
+    const getExtensionFromUrl = (url, fallbackExt) => {
+        if (url.includes('i.redd.it')) {
+            const directMatch = url.match(/i\.redd\.it\/[^.]+\.(gif|png|jpe?g)/i);
+            if (directMatch) {
+                return `.${directMatch[1].toLowerCase()}`;
+            }
+        }
+        
+        const ext = url.match(/\.(gif|png|jpe?g)(?:\?|$)/i);
+        return ext ? `.${ext[1].toLowerCase()}` : fallbackExt;
     };
 
     const downloadMedia = async (postId, isLightbox, asZip = false, btn = null) => {
@@ -346,7 +354,7 @@
         }
     };
 
-    const downloadQueue = async (urls, indexes, postTitle, extension, isLightbox, asZip = false, btn = null) => {
+    const downloadQueue = async (urls, indexes, postTitle, fallbackExt, isLightbox, asZip = false, btn = null) => {
         const cleanTitle = postTitle.replace(/[^a-z0-9]/gi, "-").replace(/-+/g, "-").replace(/^-+|-+$/g, "").toLowerCase();
         const batchSize = 10, baseDelay = 10000, randomDelay = 2000, totalImages = urls.length;
         let downloadedCount = 0;
@@ -366,6 +374,7 @@
 
         const downloadBatch = async (batch, batchIndexes) => {
             const promises = batch.map(async (url, index) => {
+                const extension = getExtensionFromUrl(url, fallbackExt);
                 const filename = isLightbox && indexes.length > 0
                     ? `${cleanTitle}_${batchIndexes[index]}${extension}`
                     : `${cleanTitle}_${downloadedCount + index + 1}${extension}`;
