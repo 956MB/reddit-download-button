@@ -59,26 +59,14 @@ The browser extension that I've always wanted for Reddit... download buttons for
 - [ ] Support downloading multiple inline images/videos from text posts
 - [ ] Add download buttons to single images in comment sections.
 
-## Known Issues
-
-> [!NOTE]
-- ZIP file creation not working when run from Tampermonkey. [Issue #2](https://github.com/956MB/reddit-download-button/issues/2)
-
 ## Changelog
 
-[1.3.5](./CHANGELOG.md#135---2025-04-22) - 2025-04-22
+[1.4.0](./CHANGELOG.md#140---2025-11-17) - 2025-11-17
 
 ##### Fixed
 
-- [#7](https://github.com/956MB/reddit-download-button/issues/7) Fixed images not being downloaded at highest resolution due to incorrectly identifying the zoomable element. Downloads overall seem to be faster now with these changes (fingers crossed).
-- Preview download button and others downloading from `i.redd.it` urls now uses `GM_xmlhttpRequest` (Tampermonkey only, unpacked extensions through chrome doesn't support or play nice with this) to bypass CORS.
-- [#6](https://github.com/956MB/reddit-download-button/issues/6) Fixed images not having their correct extension when multiple extensions are present in the post. Like a `.gif` and a `.png`, default `.png` would be used for both.
-- Not sure how or why, but maybe file previews in macOS are back to normal since we're downloading form the `i.redd.it` urls? Not even sure if this was script issue or a problem for other OS as well.
-
-##### Removed
-
-- Removed the installation instructions for manual "load unpacked" method. It doesn't play nice with the CORS policy of `i.redd.it` urls or the `GM_xmlhttpRequest` function used by tampermonkey. It's just not the best way to use it.
-- [#2](https://github.com/956MB/reddit-download-button/issues/2) Removed the ZIP download functionality because it's broken right now and I'm not sure how to fix it. Maybe will be added back if I add UI. Reduces tampermonkey script size by ~100kb, so that's a plus. Reference to #2.
+- [#8](https://github.com/956MB/reddit-download-button/issues/8) Again... fixed downloading images from gallery carousel at highest resolution. The correct zoomable wrapper is now being searched for and used to get the highest resolution image.
+- ALSO again... fixed images in the gallery carousel being downloaded as blank. This time using the next/prev buttons to cycle through and bypass the lazy loading.
 
 For a full list of changes and past versions, please see the [CHANGELOG.md](CHANGELOG.md)
 

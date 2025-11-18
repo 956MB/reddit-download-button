@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Reddit Download Buttons
 // @description  Adds buttons to easily download images/videos from Reddit
-// @version      1.3.5
+// @version      1.4.0
 // @author       Alexander Bays (956MB)
 // @namespace    https://github.com/956MB/reddit-download-button
 // @match        https://*.reddit.com/*
@@ -213,10 +213,16 @@
 
     const getHighestResUrl = (img) => {
         const mediaLightbox = img.closest(".media-lightbox-img");
-        const zoomable = mediaLightbox?.parentElement?.querySelector(".zoomable-img-wrapper img");
-        if (zoomable) return zoomable.src;
-        const srcset = img.getAttribute("srcset");
+        if (mediaLightbox) {
+            const container = mediaLightbox.parentElement;
+            const zoomableWrapper = container?.querySelector(".lightboxed-content zoomable-img img, .zoomable-img-wrapper zoomable-img img");
+            if (zoomableWrapper?.src) {
+                console.log("Using zoomable high-res:", zoomableWrapper.src);
+                return zoomableWrapper.src;
+            }
+        }
 
+        const srcset = img.getAttribute("srcset");
         if (srcset) {
             const sources = srcset.split(",").map((src) => {
                 const [url, width] = src.trim().split(" ");
@@ -234,30 +240,65 @@
     };
 
     const loadAllImages = async (container) => {
-        if (container.tagName === 'gallery-carousel') {
+        if (container.tagName === 'GALLERY-CAROUSEL') {
             const galleryImages = container.querySelectorAll("li img.media-lightbox-img");
+            const totalImages = galleryImages.length;
+            console.log(`Gallery has ${totalImages} images. Starting cycle...`);
             
-            for (let i = 0; i < galleryImages.length; i++) {
-                const img = galleryImages[i];
-                if (img.dataset.lazySrc) {
-                    img.src = img.dataset.lazySrc;
-                    img.srcset = img.dataset.lazySrcset;
+            const shadowRoot = container.shadowRoot;
+            const faceplateCarousel = shadowRoot?.querySelector('faceplate-carousel');
+            const nextButton = faceplateCarousel?.querySelector('span[slot="nextButton"] button[aria-label*="Next"]');
+            const prevButton = faceplateCarousel?.querySelector('span[slot="prevButton"] button[aria-label*="Previous"]');
+            
+            if (nextButton && totalImages > 1) {
+                for (let i = 0; i < totalImages - 1; i++) {
+                    nextButton.click();
+                    await new Promise(resolve => setTimeout(resolve, 200));
                 }
-                if (!img.complete) {
-                    await new Promise(resolve => {
-                        img.onload = resolve;
-                        setTimeout(resolve, 3000);
-                    });
+                console.log(`Cycled through all ${totalImages} gallery images`);
+                
+                if (prevButton) {
+                    for (let i = 0; i < totalImages - 1; i++) {
+                        prevButton.click();
+                        await new Promise(resolve => setTimeout(resolve, 10));
+                    }
+                }
+            } else {
+                console.log("Next button not found or only 1 image, trying manual load...");
+                for (let i = 0; i < galleryImages.length; i++) {
+                    const img = galleryImages[i];
+                    if (img.dataset.lazySrc) {
+                        img.src = img.dataset.lazySrc;
+                        img.srcset = img.dataset.lazySrcset;
+                    }
+                    if (!img.complete) {
+                        await new Promise(resolve => {
+                            img.onload = resolve;
+                            setTimeout(resolve, 3000);
+                        });
+                    }
                 }
             }
-        } 
-        else if (container instanceof HTMLImageElement) {
+        } else if (container instanceof HTMLImageElement) {
             const img = container;
             const mediaLightbox = img.closest(".media-lightbox-img");
             
             if (mediaLightbox) {
-                const zoomableWrapper = mediaLightbox.querySelector(".zoomable-img-wrapper");
+                const lightboxedContent = mediaLightbox.parentElement?.querySelector(".lightboxed-content");
+                if (lightboxedContent) {
+                    lightboxedContent.classList.remove("hidden");
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    const zoomableImg = lightboxedContent.querySelector("zoomable-img img");
+                    if (zoomableImg?.src && !zoomableImg.complete) {
+                        console.log("Waiting for zoomable image to load:", zoomableImg.src);
+                        await new Promise(resolve => {
+                            zoomableImg.onload = resolve;
+                            setTimeout(resolve, 3000);
+                        });
+                    }
+                }
                 
+                const zoomableWrapper = mediaLightbox.querySelector(".zoomable-img-wrapper");
                 if (zoomableWrapper) {
                     zoomableWrapper.classList.remove("hidden");
                     await new Promise(resolve => setTimeout(resolve, 100));
@@ -472,7 +513,7 @@
     };
 
     const init = () => {
-        console.log(`Reddit Image Downloader v1.3.5 Init`);
+        console.log(`Reddit Image Downloader v1.4.0 Init`);
         console.log("- https://github.com/956MB/reddit-download-button");
         addButtons();
         new MutationObserver(() => addButtons()).observe(document.body, { childList: true, subtree: true });

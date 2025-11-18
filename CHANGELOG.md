@@ -2,6 +2,13 @@
 
 All notable changes to the `Reddit Download Buttons` extension will be documented in this file.
 
+## 1.4.0 - 2025-11-17
+
+##### Fixed
+
+- [#8](https://github.com/956MB/reddit-download-button/issues/8) Again... fixed downloading images from gallery carousel at highest resolution. The correct zoomable wrapper is now being searched for and used to get the highest resolution image.
+- ALSO again... fixed images in the gallery carousel being downloaded as blank. This time using the next/prev buttons to cycle through and bypass the lazy loading.
+
 ## 1.3.5 - 2025-04-22
 
 ##### Fixed
