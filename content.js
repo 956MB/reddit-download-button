@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Reddit Download Buttons
 // @description  Adds buttons to easily download images/videos from Reddit
-// @version      1.4.0
+// @version      1.4.1
 // @author       Alexander Bays (956MB)
 // @namespace    https://github.com/956MB/reddit-download-button
 // @match        https://*.reddit.com/*
@@ -363,7 +363,6 @@
         }
 
         if (gallery) {
-            await loadAllImages(gallery);
             if (isLightbox) {
                 gallery.querySelectorAll("li").forEach((li, index) => {
                     if (li.style.visibility === "visible" || li.getAttribute('tabindex') === "0") {
@@ -377,6 +376,7 @@
                     }
                 });
             } else {
+                await loadAllImages(gallery);
                 urls = Array.from(gallery.querySelectorAll("li img.media-lightbox-img")).map(getHighestResUrl);
             }
         } else if (video) {
@@ -513,7 +513,7 @@
     };
 
     const init = () => {
-        console.log(`Reddit Image Downloader v1.4.0 Init`);
+        console.log(`Reddit Image Downloader v1.4.1 Init`);
         console.log("- https://github.com/956MB/reddit-download-button");
         addButtons();
         new MutationObserver(() => addButtons()).observe(document.body, { childList: true, subtree: true });

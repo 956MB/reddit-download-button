@@ -2,6 +2,12 @@
 
 All notable changes to the `Reddit Download Buttons` extension will be documented in this file.
 
+## 1.4.1 - 2025-11-19
+
+##### Fixed
+
+- Incorrect behavior where pressing download button inside the lightbox gallery would load and download all images in the gallery, instead of just the one image.
+
 ## 1.4.0 - 2025-11-17
 
 ##### Fixed

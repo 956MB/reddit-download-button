@@ -61,12 +61,11 @@ The browser extension that I've always wanted for Reddit... download buttons for
 
 ## Changelog
 
-[1.4.0](./CHANGELOG.md#140---2025-11-17) - 2025-11-17
+[1.4.1](./CHANGELOG.md#141---2025-11-19) - 2025-11-19
 
 ##### Fixed
 
-- [#8](https://github.com/956MB/reddit-download-button/issues/8) Again... fixed downloading images from gallery carousel at highest resolution. The correct zoomable wrapper is now being searched for and used to get the highest resolution image.
-- ALSO again... fixed images in the gallery carousel being downloaded as blank. This time using the next/prev buttons to cycle through and bypass the lazy loading.
+- Incorrect behavior where pressing download button inside the lightbox gallery would load and download all images in the gallery, instead of just the one image.
 
 For a full list of changes and past versions, please see the [CHANGELOG.md](CHANGELOG.md)
 
