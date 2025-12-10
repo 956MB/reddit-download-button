@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Reddit Download Buttons
 // @description  Adds buttons to easily download images/videos from Reddit
-// @version      1.4.1
+// @version      1.4.2
 // @author       Alexander Bays (956MB)
 // @namespace    https://github.com/956MB/reddit-download-button
 // @match        https://*.reddit.com/*
@@ -133,9 +133,9 @@
 
             let count = 1;
             const gallery = mediaContainer.querySelector("gallery-carousel");
-            const video = mediaContainer.querySelector("shreddit-player, shreddit-player-2");
-            const src = video?.querySelector("source")?.src;
-            const isGif = src?.includes("gif");
+            const video = mediaContainer.querySelector("shreddit-player, shreddit-player-2, shreddit-player-static, shreddit-player-static-hlsjs");
+            const src = video?.querySelector("source")?.src || video?.getAttribute("src");
+            const isGif = src?.includes("gif") || video?.hasAttribute("gif");
 
             if (gallery) {
                 count = mediaContainer.querySelectorAll("gallery-carousel ul li").length;
@@ -211,6 +211,18 @@
         return title;
     };
 
+    const constructUrl = (url, source) => {
+        const match = url?.match(/v\d+-([a-z0-9]+)\.(jpg|jpeg|png|gif)/i);
+        if (match) {
+            const imageId = match[1];
+            const ext = match[2];
+            const url = `https://i.redd.it/${imageId}.${ext}`;
+            console.log(`i.redd.it URL from ${source}: ${url}`);
+            return url;
+        }
+        return null;
+    };
+
     const getHighestResUrl = (img) => {
         const mediaLightbox = img.closest(".media-lightbox-img");
         if (mediaLightbox) {
@@ -222,18 +234,15 @@
             }
         }
 
+        let reddUrl = null;
         const srcset = img.getAttribute("srcset");
         if (srcset) {
-            const sources = srcset.split(",").map((src) => {
-                const [url, width] = src.trim().split(" ");
-                return { url, width: parseInt(width) };
-            }).sort((a, b) => b.width - a.width);
-            
-            if (sources.length > 0) {
-                console.log("Using highest res from srcset:", sources[0].url);
-                return sources[0].url;
-            }
+            reddUrl = constructUrl(srcset.split(",")[0].trim().split(" ")[0], 'srcset');
         }
+        if (!reddUrl) {
+            reddUrl = constructUrl(img.src, 'src');
+        }
+        if (reddUrl) return reddUrl;
         
         console.log("Falling back to original src:", img.src);
         return img.src;
@@ -352,12 +361,16 @@
             mediaContainer = post.querySelector('div[slot="post-media-container"]');
             if (!mediaContainer) return alert("No media found in this post");
             gallery = mediaContainer.querySelector("gallery-carousel");
-            video = mediaContainer.querySelector("shreddit-player, shreddit-player-2");
+            video = mediaContainer.querySelector("shreddit-player, shreddit-player-2, shreddit-player-static, shreddit-player-static-hlsjs");
         } else {
             lightbox = document.getElementById("shreddit-media-lightbox");
             gallery = lightbox.querySelector("gallery-carousel");
+            video = lightbox.querySelector("shreddit-player, shreddit-player-2, shreddit-player-static, shreddit-player-static-hlsjs");
             if (gallery) {
                 postId = gallery.getAttribute("post-id");
+                post = document.getElementById(postId);
+            } else if (video) {
+                postId = video.getAttribute("post-id");
                 post = document.getElementById(postId);
             }
         }
@@ -380,10 +393,23 @@
                 urls = Array.from(gallery.querySelectorAll("li img.media-lightbox-img")).map(getHighestResUrl);
             }
         } else if (video) {
-            const srcUrl = video.getAttribute("src"), source = video.querySelector("source");
-            if (srcUrl.includes("gif")) {
-                urls = [source.src];
-                extension = '.mp4';
+            const srcUrl = video.getAttribute("src");
+            const posterUrl = video.getAttribute("poster");
+            const source = video.querySelector("source");
+            const isGif = srcUrl?.includes("gif") || posterUrl?.includes("gif") || video.hasAttribute("gif");
+            
+            if (isGif) {
+                const reddUrl = constructUrl(posterUrl, 'poster') || 
+                                constructUrl(srcUrl, 'src') || 
+                                constructUrl(source?.src, 'source');
+                
+                if (reddUrl) {
+                    urls = [reddUrl];
+                    extension = '.gif';
+                } else {
+                    urls = [source?.src || srcUrl];
+                    extension = '.mp4';
+                }
             }
         } else {
             console.log("no gallery or video, SINGLE IMAGE");
@@ -513,7 +539,7 @@
     };
 
     const init = () => {
-        console.log(`Reddit Image Downloader v1.4.1 Init`);
+        console.log(`Reddit Image Downloader v1.4.2 Init`);
         console.log("- https://github.com/956MB/reddit-download-button");
         addButtons();
         new MutationObserver(() => addButtons()).observe(document.body, { childList: true, subtree: true });

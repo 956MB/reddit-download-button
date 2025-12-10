@@ -2,6 +2,14 @@
 
 All notable changes to the `Reddit Download Buttons` extension will be documented in this file.
 
+## 1.4.2 - 2025-12-10
+
+##### Fixed
+
+- Fixed the download resolution of images in a gallery (for real this time). Pointed out in [#9](https://github.com/956MB/reddit-download-button/issues/9), putting the content id's into a `i.redd.it` url actually locates the highest resolution image for downloading.
+- Fixed the `No media found to download` error on GIFs, the downlolad url was not being located correctly, and [#10](https://github.com/956MB/reddit-download-button/issues/10), GIFs being downloaded as `.mp4` instead of `.gif`.
+- The download button being shown on video posts when it should not be.
+
 ## 1.4.1 - 2025-11-19
 
 ##### Fixed
