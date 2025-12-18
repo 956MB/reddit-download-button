@@ -51,23 +51,13 @@ The browser extension that I've always wanted for Reddit... download buttons for
 3. Click on the "Install" or "Update" button
 4. The script should now be active on Reddit
 
-## TODO
-
-- [ ] Figure out downloading m3u8 videos
-- [ ] Add UI for extension settings
-- [ ] Include metadata in ZIP file for the downloaded images/post (title, author, comments, etc.)
-- [ ] Support downloading multiple inline images/videos from text posts
-- [ ] Add download buttons to single images in comment sections.
-
 ## Changelog
 
-[1.4.2](./CHANGELOG.md#142---2025-12-10) - 2025-12-10
+[1.4.3](./CHANGELOG.md#143---2025-12-18) - 2025-12-18
 
-##### Fixed
+##### Added
 
-- Fixed the download resolution of images in a gallery (for real this time). Pointed out in [#9](https://github.com/956MB/reddit-download-button/issues/9), putting the content id's into a `i.redd.it` url actually locates the highest resolution image for downloading.
-- Fixed the `No media found to download` error on GIFs, the downlolad url was not being located correctly, and [#10](https://github.com/956MB/reddit-download-button/issues/10), GIFs being downloaded as `.mp4` instead of `.gif`.
-- The download button being shown on video posts when it should not be.
+- Added support for downloading inline images (text posts and embedded in comments).
 
 For a full list of changes and past versions, please see the [CHANGELOG.md](CHANGELOG.md)
 

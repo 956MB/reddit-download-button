@@ -2,6 +2,12 @@
 
 All notable changes to the `Reddit Download Buttons` extension will be documented in this file.
 
+## 1.4.3 - 2025-12-18
+
+##### Added
+
+- Added support for downloading inline images (text posts and embedded in comments).
+
 ## 1.4.2 - 2025-12-10
 
 ##### Fixed
