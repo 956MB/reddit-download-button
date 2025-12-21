@@ -6,7 +6,7 @@ All notable changes to the `Reddit Download Buttons` extension will be documente
 
 ##### Fixed
 
-- Incorrect RegEX contructing the wrong url for download.
+- Incorrect RegEX constructing the wrong url for download.
 
 ## 1.4.3 - 2025-12-18
 

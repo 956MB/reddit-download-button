@@ -57,7 +57,7 @@ The browser extension that I've always wanted for Reddit... download buttons for
 
 ##### Fixed
 
-- Incorrect RegEX contructing the wrong url for download.
+- Incorrect RegEX constructing the wrong url for download.
 
 For a full list of changes and past versions, please see the [CHANGELOG.md](CHANGELOG.md)
 
