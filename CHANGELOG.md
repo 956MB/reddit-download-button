@@ -2,6 +2,12 @@
 
 All notable changes to the `Reddit Download Buttons` extension will be documented in this file.
 
+## 1.4.4 - 2025-12-21
+
+##### Fixed
+
+- Incorrect RegEX contructing the wrong url for download.
+
 ## 1.4.3 - 2025-12-18
 
 ##### Added

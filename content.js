@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Reddit Download Buttons
 // @description  Adds buttons to easily download images/videos from Reddit
-// @version      1.4.3
+// @version      1.4.4
 // @author       Alexander Bays (956MB)
 // @namespace    https://github.com/956MB/reddit-download-button
 // @match        https://*.reddit.com/*
@@ -13,7 +13,7 @@
 (function () {
     "use strict";
 
-    const urlPattern = /(?:(?:v\d+|t\d+|\w+)-)?([a-zA-Z0-9_-]+)\.(jpg|jpeg|png|gif)/i;
+    const urlPattern = /(?:-v\d+|-t\d+)?-([a-zA-Z0-9]+)\.(jpg|jpeg|png|gif)/i;
 
     const constructUrl = (url, source) => {
         let match = url?.match(urlPattern);
@@ -646,7 +646,7 @@
     };
 
     const init = () => {
-        console.log(`Reddit Image Downloader v1.4.3 Init`);
+        console.log(`Reddit Image Downloader v1.4.4 Init`);
         console.log("- https://github.com/956MB/reddit-download-button");
         addButtons();
         new MutationObserver(() => addButtons()).observe(document.body, { childList: true, subtree: true });

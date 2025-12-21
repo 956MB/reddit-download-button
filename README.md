@@ -53,11 +53,11 @@ The browser extension that I've always wanted for Reddit... download buttons for
 
 ## Changelog
 
-[1.4.3](./CHANGELOG.md#143---2025-12-18) - 2025-12-18
+[1.4.4](./CHANGELOG.md#144---2025-12-18) - 2025-12-21
 
-##### Added
+##### Fixed
 
-- Added support for downloading inline images (text posts and embedded in comments).
+- Incorrect RegEX contructing the wrong url for download.
 
 For a full list of changes and past versions, please see the [CHANGELOG.md](CHANGELOG.md)
 
