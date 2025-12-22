@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Reddit Download Buttons
 // @description  Adds buttons to easily download images/videos from Reddit
-// @version      1.4.4
+// @version      1.4.5
 // @author       Alexander Bays (956MB)
 // @namespace    https://github.com/956MB/reddit-download-button
 // @match        https://*.reddit.com/*
@@ -640,6 +640,9 @@
         a.href = URL.createObjectURL(blob);
         a.download = filename;
         document.body.appendChild(a);
+        a.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(a.href);
