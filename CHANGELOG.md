@@ -2,6 +2,12 @@
 
 All notable changes to the `Reddit Download Buttons` extension will be documented in this file.
 
+## 1.4.5 - 2025-12-22
+
+##### Fixed
+
+- [#12](https://github.com/956MB/reddit-download-button/pull/12): Fix gallery download interruption causing blob URL navigation (Firefox).
+
 ## 1.4.4 - 2025-12-21
 
 ##### Fixed

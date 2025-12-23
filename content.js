@@ -649,7 +649,7 @@
     };
 
     const init = () => {
-        console.log(`Reddit Image Downloader v1.4.4 Init`);
+        console.log(`Reddit Image Downloader v1.4.5 Init`);
         console.log("- https://github.com/956MB/reddit-download-button");
         addButtons();
         new MutationObserver(() => addButtons()).observe(document.body, { childList: true, subtree: true });
