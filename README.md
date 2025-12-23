@@ -53,11 +53,11 @@ The browser extension that I've always wanted for Reddit... download buttons for
 
 ## Changelog
 
-[1.4.4](./CHANGELOG.md#144---2025-12-18) - 2025-12-21
+[1.4.5](./CHANGELOG.md#145---2025-12-22) - 2025-12-22
 
 ##### Fixed
 
-- Incorrect RegEX constructing the wrong url for download.
+- [#12](https://github.com/956MB/reddit-download-button/pull/12): Fix gallery download interruption causing blob URL navigation (Firefox).
 
 For a full list of changes and past versions, please see the [CHANGELOG.md](CHANGELOG.md)
 
