@@ -2,6 +2,12 @@
 
 All notable changes to the `Reddit Download Buttons` extension will be documented in this file.
 
+## 1.4.6 - 2026-2-14
+
+##### Fixed
+
+- `i.imgur.com` URLs were attempting to be downloaded with `fetch` instead of `GM_xmlhttpRequest`, which was causing CSP violation errors in the console and the image(s) not to be saved.
+
 ## 1.4.5 - 2025-12-22
 
 ##### Fixed

@@ -53,11 +53,11 @@ The browser extension that I've always wanted for Reddit... download buttons for
 
 ## Changelog
 
-[1.4.5](./CHANGELOG.md#145---2025-12-22) - 2025-12-22
+[1.4.6](./CHANGELOG.md#146---2026-2-14) - 2026-2-14
 
 ##### Fixed
 
-- [#12](https://github.com/956MB/reddit-download-button/pull/12): Fix gallery download interruption causing blob URL navigation (Firefox).
+- `i.imgur.com` URLs were attempting to be downloaded with `fetch` instead of `GM_xmlhttpRequest`, which was causing CSP violation errors in the console and the image(s) not to be saved.
 
 For a full list of changes and past versions, please see the [CHANGELOG.md](CHANGELOG.md)
 

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Reddit Download Buttons
 // @description  Adds buttons to easily download images/videos from Reddit
-// @version      1.4.5
+// @version      1.4.6
 // @author       Alexander Bays (956MB)
 // @namespace    https://github.com/956MB/reddit-download-button
 // @match        https://*.reddit.com/*
@@ -13,6 +13,12 @@
 (function () {
     "use strict";
 
+    const PREFIX = '[Reddit Download Buttons]';
+    const log = {
+        info: (msg, ...args) => console.log(`${PREFIX} ${msg}`, ...args),
+        warn: (msg, ...args) => console.warn(`${PREFIX} ${msg}`, ...args),
+        error: (msg, ...args) => console.error(`${PREFIX} ${msg}`, ...args),
+    };
     const urlPattern = /(?:-v\d+|-t\d+)?-([a-zA-Z0-9]+)\.(jpg|jpeg|png|gif)/i;
 
     const constructUrl = (url, source) => {
@@ -21,7 +27,7 @@
             const imageId = match[1];
             const ext = match[2];
             const reddUrl = `https://i.redd.it/${imageId}.${ext}`;
-            console.log(`i.redd.it URL from ${source}: ${reddUrl}`);
+            log.info(`Constructed i.redd.it URL from ${source}:`, reddUrl);
             return reddUrl;
         }
         return null;
@@ -45,7 +51,7 @@
             const container = mediaLightbox.parentElement;
             const zoomableWrapper = container?.querySelector(".lightboxed-content zoomable-img img, .zoomable-img-wrapper zoomable-img img");
             if (zoomableWrapper?.src) {
-                console.log("Using zoomable high-res:", zoomableWrapper.src);
+                log.info("Using zoomable high-res image:", zoomableWrapper.src);
                 return zoomableWrapper.src;
             }
         }
@@ -60,7 +66,7 @@
         }
         if (reddUrl) return reddUrl;
         
-        console.log("Falling back to original src:", img.src);
+        log.info("Using original src:", img.src);
         return img.src;
     };
 
@@ -352,7 +358,7 @@
         if (container.tagName === 'GALLERY-CAROUSEL') {
             const galleryImages = container.querySelectorAll("li img.media-lightbox-img");
             const totalImages = galleryImages.length;
-            console.log(`Gallery has ${totalImages} images. Starting cycle...`);
+            log.info(`Gallery: ${totalImages} images, starting cycle...`);
             
             const shadowRoot = container.shadowRoot;
             const faceplateCarousel = shadowRoot?.querySelector('faceplate-carousel');
@@ -364,7 +370,7 @@
                     nextButton.click();
                     await new Promise(resolve => setTimeout(resolve, 200));
                 }
-                console.log(`Cycled through all ${totalImages} gallery images`);
+                log.info(`Gallery cycle complete: ${totalImages} images loaded`);
                 
                 if (prevButton) {
                     for (let i = 0; i < totalImages - 1; i++) {
@@ -373,7 +379,7 @@
                     }
                 }
             } else {
-                console.log("Next button not found or only 1 image, trying manual load...");
+                log.info("Using manual load for gallery images");
                 for (let i = 0; i < galleryImages.length; i++) {
                     const img = galleryImages[i];
                     if (img.dataset.lazySrc) {
@@ -399,7 +405,7 @@
                     await new Promise(resolve => setTimeout(resolve, 100));
                     const zoomableImg = lightboxedContent.querySelector("zoomable-img img");
                     if (zoomableImg?.src && !zoomableImg.complete) {
-                        console.log("Waiting for zoomable image to load:", zoomableImg.src);
+                        log.info("Waiting for zoomable image to load...");
                         await new Promise(resolve => {
                             zoomableImg.onload = resolve;
                             setTimeout(resolve, 3000);
@@ -458,7 +464,7 @@
 
         if (!isLightbox) {
             post = document.getElementById(postId);
-            console.log("postId: ", postId);
+            log.info(`Processing post: ${postId}`);
             if (!post) return alert("Error: Could not find post content");
             mediaContainer = post.querySelector('div[slot="post-media-container"]');
             if (!mediaContainer) return alert("No media found in this post");
@@ -514,10 +520,8 @@
                 }
             }
         } else {
-            console.log("no gallery or video, SINGLE IMAGE");
             let singleImg = null;
             if (isLightbox && lightbox) {
-                console.log("lightbox: ", lightbox);
                 singleImg = lightbox.querySelector("img.media-lightbox-img");
             } else {
                 singleImg = mediaContainer.querySelector("shreddit-aspect-ratio img.media-lightbox-img");
@@ -565,8 +569,7 @@
                     filename = `${cleanTitle}_${downloadedCount + index + 1}${extension}`;
                 }
                 try {
-                    // Use GM_xmlhttpRequest for i.redd.it urls to bypass cors (works in Tampermonkey)
-                    if (url.includes('i.redd.it') && typeof GM_xmlhttpRequest !== 'undefined') {
+                    if ((url.includes('i.redd.it') || url.includes('i.imgur.com')) && typeof GM_xmlhttpRequest !== 'undefined') {
                         return new Promise((resolve) => {
                             GM_xmlhttpRequest({
                                 method: 'GET',
@@ -576,32 +579,41 @@
                                     try {
                                         const blob = response.response;
                                         await saveBlob(blob, filename);
-                                        console.log(`Downloaded: ${filename}`);
+                                        log.info(`Downloaded: ${filename}`);
                                         resolve(true);
                                     } catch (error) {
-                                        console.error(`Error processing ${filename}: ${error}`);
+                                        log.error(`Error processing ${filename}:`, error);
                                         resolve(false);
                                     }
                                 },
-                                onerror: function (error) {
-                                    console.error(`Error downloading ${filename}: ${error}`);
-                                    resolve(false);
+                                onerror: function () {
+                                    log.warn(`GM request failed, opening in new tab: ${filename}`);
+                                    window.open(url, '_blank');
+                                    resolve(true);
                                 }
                             });
                         });
                     } else {
-                        // Regular fetch for non-i.redd.it URLs
-                        const response = await fetch(url, { mode: 'cors' });
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! status: ${response.status}`);
+                        try {
+                            const response = await fetch(url, { mode: 'cors' });
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            const blob = await response.blob();
+                            await saveBlob(blob, filename);
+                            log.info(`Downloaded: ${filename}`);
+                            return true;
+                        } catch (fetchError) {
+                            if (fetchError.message.includes('Failed to fetch') || fetchError.name === 'TypeError') {
+                                log.warn(`Fetch blocked (CSP), opening in new tab: ${url}`);
+                                window.open(url, '_blank');
+                                return true;
+                            }
+                            throw fetchError;
                         }
-                        const blob = await response.blob();
-                        await saveBlob(blob, filename);
-                        console.log(`Downloaded: ${filename}`);
-                        return true;
                     }
                 } catch (error) {
-                    console.error(`Error processing ${filename}: ${error}`);
+                    log.error(`Error processing ${filename}:`, error);
                     return false;
                 }
             });
@@ -611,7 +623,7 @@
             updateButtonStatus();
 
             if (totalImages > 1) {
-                console.log(`Batch complete. Processed: ${downloadedCount}/${totalImages}`);
+                log.info(`Batch complete: ${downloadedCount}/${totalImages}`);
             }
         };
 
@@ -620,7 +632,7 @@
             await downloadBatch(batch, batchIndexes);
             if (i + batchSize < urls.length) {
                 const delay = baseDelay + Math.random() * randomDelay;
-                console.log(`Waiting ${Math.floor(delay / 1000)} seconds before next batch...`);
+                log.info(`Waiting ${Math.floor(delay / 1000)}s before next batch...`);
                 await new Promise(resolve => setTimeout(resolve, delay));
             }
         }
@@ -631,7 +643,7 @@
         }
 
         if (totalImages > 1) {
-            console.log(`Download queue completed for "${postTitle}". Total files: ${downloadedCount}`);
+            log.info(`Queue complete: "${postTitle}" (${downloadedCount} files)`);
         }
     };
 
@@ -649,8 +661,7 @@
     };
 
     const init = () => {
-        console.log(`Reddit Image Downloader v1.4.5 Init`);
-        console.log("- https://github.com/956MB/reddit-download-button");
+        log.info("Initialized v1.4.6 - https://github.com/956MB/reddit-download-button");
         addButtons();
         new MutationObserver(() => addButtons()).observe(document.body, { childList: true, subtree: true });
     };
