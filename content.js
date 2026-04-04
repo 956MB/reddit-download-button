@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Reddit Download Buttons
 // @description  Adds buttons to easily download images/videos from Reddit
-// @version      1.4.6
+// @version      1.4.7
 // @author       Alexander Bays (956MB)
 // @namespace    https://github.com/956MB/reddit-download-button
 // @match        https://*.reddit.com/*
@@ -33,16 +33,42 @@
         return null;
     };
 
-    const getPostTitle = (element) => {
-        if (element instanceof HTMLImageElement) {
-            const parts = element.alt.split(" - ");
-            return parts.length > 1 ? parts[1].trim() : parts[0].trim();
+    const sanitizeFilename = (str) => {
+        return str
+            .replace(/[\\/:*?"<>|]/g, '')
+            .replace(/[\x00-\x1f]/g, '')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .replace(/[\u2026.]+$/, '');
+    };
+
+    const getFilenameBase = (element) => {
+        const postEl = element instanceof HTMLImageElement
+            ? (element.closest('shreddit-post') || document.querySelector('shreddit-post'))
+            : element;
+
+        if (postEl) {
+            const author = postEl.getAttribute('author') || '';
+            const subreddit = postEl.getAttribute('subreddit-name') || '';
+            const rawTitle =
+                postEl.querySelector('h1[id^="post-title-"]')?.textContent.trim() ||
+                postEl.querySelector('a[id^="post-title-"]')?.textContent.trim() ||
+                postEl.getAttribute('post-title') ||
+                (element instanceof HTMLImageElement
+                    ? (() => { const p = element.alt.split(' - '); return p.length > 1 ? p.slice(1).join(' - ').trim() : p[0].trim(); })()
+                    : '') ||
+                'Untitled';
+            return [author, subreddit, sanitizeFilename(rawTitle)].filter(Boolean).join('-');
         }
 
-        const title = element.querySelector('h1[id^="post-title-"]')?.textContent.trim() ||
-            element.getAttribute("post-title") ||
-            "Untitled";
-        return title;
+        if (element instanceof HTMLImageElement) {
+            const parts = element.alt.split(' - ');
+            const subreddit = parts.length > 1 ? parts[0].replace(/^r\//, '').trim() : '';
+            const title = sanitizeFilename(parts.length > 1 ? parts.slice(1).join(' - ').trim() : parts[0].trim()) || 'Untitled';
+            return [subreddit, title].filter(Boolean).join('-');
+        }
+
+        return 'Untitled';
     };
 
     const getHighestResUrl = (img) => {
@@ -534,7 +560,7 @@
         }
 
         if (urls.length > 0) {
-            const postTitle = getPostTitle(post);
+            const postTitle = getFilenameBase(post);
             await downloadQueue(urls, indexes, postTitle, extension, isLightbox, btn);
         } else {
             alert("No media found to download");
@@ -545,7 +571,7 @@
     };
 
     const downloadQueue = async (urls, indexes, postTitle, fallbackExt, isLightbox, btn = null) => {
-        const cleanTitle = postTitle.replace(/[^a-z0-9]/gi, "-").replace(/-+/g, "-").replace(/^-+|-+$/g, "").toLowerCase();
+        const cleanTitle = sanitizeFilename(postTitle);
         const batchSize = 10, baseDelay = 10000, randomDelay = 2000, totalImages = urls.length;
         let downloadedCount = 0;
 
@@ -661,7 +687,7 @@
     };
 
     const init = () => {
-        log.info("Initialized v1.4.6 - https://github.com/956MB/reddit-download-button");
+        log.info("Initialized v1.4.7 - https://github.com/956MB/reddit-download-button");
         addButtons();
         new MutationObserver(() => addButtons()).observe(document.body, { childList: true, subtree: true });
     };
