@@ -133,6 +133,6 @@ jobs:
           set -euo pipefail
 
           gh release create "$TAG" "$ARCHIVE" \
-            --title "Reddit Download Buttons $TAG" \
+            --title "v$TAG" \
             --notes-file release-notes.md \
             --verify-tag
