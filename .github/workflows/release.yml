@@ -1,0 +1,138 @@
+name: Create Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Semantic version to release, without a leading v (for example, 1.4.8)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ inputs.version }}
+
+    steps:
+      - name: Check out release source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate release version and changelog
+        run: |
+          set -euo pipefail
+
+          node <<'NODE'
+          const fs = require('fs');
+
+          const version = process.env.VERSION.trim();
+          if (!/^\d+\.\d+\.\d+$/.test(version)) {
+              throw new Error(`Invalid version "${version}". Use MAJOR.MINOR.PATCH, such as 1.4.8.`);
+          }
+
+          const manifestVersion = JSON.parse(fs.readFileSync('manifest.json', 'utf8')).version;
+          const content = fs.readFileSync('content.js', 'utf8');
+          const changelog = fs.readFileSync('CHANGELOG.md', 'utf8');
+          const scriptVersion = content.match(/^\/\/ @version\s+([^\s]+)$/m)?.[1];
+          const initVersion = content.match(/Initialized v(\d+\.\d+\.\d+)/)?.[1];
+          const changelogVersion = changelog.match(/^##\s+(\d+\.\d+\.\d+)\s+-\s+.+$/m)?.[1];
+
+          const versions = {
+              'manifest.json': manifestVersion,
+              'content.js @version': scriptVersion,
+              'content.js init log': initVersion,
+              'latest CHANGELOG.md entry': changelogVersion,
+          };
+          const mismatches = Object.entries(versions)
+              .filter(([, value]) => value !== version)
+              .map(([file, value]) => `${file} is ${value ?? 'missing'}`);
+
+          if (mismatches.length) {
+              throw new Error(`Version ${version} does not match: ${mismatches.join(', ')}`);
+          }
+          NODE
+
+          TAG="$VERSION"
+          if git show-ref --verify --quiet "refs/tags/$TAG"; then
+              echo "Tag $TAG already exists. Choose a new version or remove the existing release manually."
+              exit 1
+          fi
+
+      - name: Build source archive
+        env:
+          ARCHIVE: reddit-download-button-v${{ inputs.version }}.zip
+        run: |
+          set -euo pipefail
+
+          git archive \
+            --format=zip \
+            --prefix="reddit-download-button-v${VERSION}/" \
+            --output="$ARCHIVE" \
+            HEAD \
+            .gitignore CHANGELOG.md LICENSE README.md content.js manifest.json 'img/*.png'
+
+          unzip -t "$ARCHIVE"
+
+      - name: Build release notes from latest changelog entry
+        env:
+          NOTES_FILE: release-notes.md
+        run: |
+          set -euo pipefail
+
+          node <<'NODE'
+          const fs = require('fs');
+
+          const version = process.env.VERSION.trim();
+          const changelogLines = fs.readFileSync('CHANGELOG.md', 'utf8').split('\n');
+          const start = changelogLines.findIndex(line => line.startsWith(`## ${version} - `));
+          if (start === -1) {
+              throw new Error(`Could not find changelog entry for ${version}.`);
+          }
+
+          const nextHeading = changelogLines.findIndex(
+              (line, index) => index > start && /^##\s+/.test(line)
+          );
+          const end = nextHeading === -1 ? changelogLines.length : nextHeading;
+          const entry = changelogLines.slice(start + 1, end).join('\n').trim();
+          if (!entry) {
+              throw new Error(`Changelog entry for ${version} is empty.`);
+          }
+
+          const notes = [
+              entry,
+              '',
+              '**Greasy Fork page**: [Reddit Download Buttons](https://greasyfork.org/en/scripts/501718-reddit-image-download-button)',
+              '**Full Changelog**: [CHANGELOG.md](https://github.com/956MB/reddit-download-button/blob/main/CHANGELOG.md)',
+              '',
+          ].join('\n');
+          fs.writeFileSync(process.env.NOTES_FILE, notes);
+          NODE
+
+      - name: Create and push release tag
+        env:
+          TAG: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG" -m "Release $TAG" HEAD
+          git push origin "$TAG"
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARCHIVE: reddit-download-button-v${{ inputs.version }}.zip
+          TAG: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+
+          gh release create "$TAG" "$ARCHIVE" \
+            --title "Reddit Download Buttons $TAG" \
+            --notes-file release-notes.md \
+            --verify-tag

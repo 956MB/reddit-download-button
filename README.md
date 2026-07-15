@@ -53,12 +53,11 @@ The browser extension that I've always wanted for Reddit... download buttons for
 
 ## Changelog
 
-[1.4.7](./CHANGELOG.md#147---2026-4-4) - 2026-4-4
+[1.4.8](./CHANGELOG.md#148---2026-7-14) - 2026-7-14
 
-##### Changed
+##### Fixed
 
-- Downloaded filenames now include the post author and subreddit as a prefix (`in_process_of_making_new_script_1.png` -> `Specialist_Sense5823-neography-In Process of making new script_1.png`). [#14](https://github.com/956MB/reddit-download-button/issues/14)
-- Title sanitization now preserves original casing and spacing, only stripping characters that are illegal in filenames. [#15](https://github.com/956MB/reddit-download-button/issues/15)
+- Fixed single-image posts showing `No media found to download` after Reddit changed its image markup. The downloader now locates the post's primary image directly.
 
 For a full list of changes and past versions, please see the [CHANGELOG.md](CHANGELOG.md)
 

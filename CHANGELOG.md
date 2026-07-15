@@ -2,12 +2,11 @@
 
 All notable changes to the `Reddit Download Buttons` extension will be documented in this file.
 
-## 1.4.7 - 2026-4-4
+## 1.4.8 - 2026-7-14
 
-##### Changed
+##### Fixed
 
-- Downloaded filenames now include the post author and subreddit as a prefix, separated by `-` (`in_process_of_making_new_script_1.png` -> `Specialist_Sense5823-neography-In Process of making new script_1.png`). [#14](https://github.com/956MB/reddit-download-button/issues/14).
-- Title sanitization now preserves original casing and spacing, only stripping the small subset of characters that are illegal in filenames (`\ / : * ? " < > |`). [#15](https://github.com/956MB/reddit-download-button/issues/15).
+- Fixed single-image posts showing `No media found to download` after Reddit changed its image markup. The downloader now locates the post's primary image directly.
 
 ## 1.4.6 - 2026-2-14
 
